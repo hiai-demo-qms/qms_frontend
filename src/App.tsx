@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import DocumentView from "./pages/DocumentView";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,10 @@ const AppContent = () => {
       <Route 
         path="/dashboard" 
         element={<ProtectedRoute element={<Dashboard />} />} 
+      />
+      <Route 
+        path="/document/:id" 
+        element={<ProtectedRoute element={<DocumentView />} />} 
       />
       <Route path="*" element={<NotFound />} />
     </Routes>

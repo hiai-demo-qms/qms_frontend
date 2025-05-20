@@ -2,6 +2,7 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileText } from "lucide-react";
+import { Link } from "react-router-dom";
 import type { Document } from "@/data/documents";
 
 interface DocumentCardProps {
@@ -35,8 +36,10 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
         <div className="text-xs text-gray-500">
           Last updated: {document.lastUpdated}
         </div>
-        <Button variant="outline" size="sm">
-          View Document
+        <Button variant="outline" size="sm" asChild>
+          <Link to={`/document/${document.id}`}>
+            View Document
+          </Link>
         </Button>
       </CardFooter>
     </Card>
