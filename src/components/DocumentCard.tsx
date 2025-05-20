@@ -1,6 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { FileText } from "lucide-react";
 import type { Document } from "@/data/documents";
 
 interface DocumentCardProps {
@@ -12,9 +13,12 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
     <Card className="w-full hover:shadow-md transition-shadow duration-300">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
-          <div>
-            <CardTitle className="text-lg font-medium">{document.title}</CardTitle>
-            <CardDescription className="text-sm mt-1">{document.description}</CardDescription>
+          <div className="flex items-start">
+            <FileText className="mr-2 h-5 w-5 text-qms-blue mt-0.5" />
+            <div>
+              <CardTitle className="text-lg font-medium">{document.title}</CardTitle>
+              <CardDescription className="text-sm mt-1">{document.description}</CardDescription>
+            </div>
           </div>
           <div className="px-2 py-1 bg-qms-gray rounded-md text-xs font-medium">
             {document.standard}

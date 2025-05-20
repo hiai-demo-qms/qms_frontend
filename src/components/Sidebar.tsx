@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { categories } from "@/data/documents";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { FileText, ClipboardCheck } from "lucide-react";
 
 interface SidebarProps {
   selectedCategory: string;
@@ -16,7 +17,10 @@ const Sidebar = ({ selectedCategory, onCategoryChange }: SidebarProps) => {
       <ScrollArea className="h-full p-4">
         <div className="space-y-4 py-4">
           <div className="px-3 py-2">
-            <h2 className="mb-2 px-4 text-lg font-semibold">Documents</h2>
+            <h2 className="mb-2 px-4 text-lg font-semibold flex items-center">
+              <ClipboardCheck className="mr-2 h-5 w-5 text-qms-blue" />
+              ISO 9001:2015
+            </h2>
             <div className="space-y-1">
               {categories.map((category) => (
                 <Button
@@ -28,6 +32,7 @@ const Sidebar = ({ selectedCategory, onCategoryChange }: SidebarProps) => {
                   )}
                   onClick={() => onCategoryChange(category)}
                 >
+                  <FileText className="mr-2 h-4 w-4" />
                   {category}
                 </Button>
               ))}

@@ -5,7 +5,7 @@ import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import DocumentCard from "@/components/DocumentCard";
 import ChatbotButton from "@/components/ChatbotButton";
-import { documents } from "@/data/documents";
+import { documents, standards } from "@/data/documents";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -13,16 +13,18 @@ const Dashboard = () => {
   const { user } = useAuth();
   const [selectedCategory, setSelectedCategory] = useState("All Documents");
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedStandard, setSelectedStandard] = useState("ISO 9001:2015");
 
-  // Filter documents based on selected category and search term
+  // Filter documents based on selected category, search term, and standard
   const filteredDocuments = documents.filter((doc) => {
     const matchesCategory = selectedCategory === "All Documents" || doc.category === selectedCategory;
     const matchesSearch = 
       doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       doc.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
       doc.standard.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStandard = doc.standard === selectedStandard;
     
-    return matchesCategory && (searchTerm === "" || matchesSearch);
+    return matchesCategory && (searchTerm === "" || matchesSearch) && matchesStandard;
   });
 
   return (
@@ -44,7 +46,7 @@ const Dashboard = () => {
               Welcome, {user?.name || "User"}
             </h1>
             <p className="text-gray-500">
-              Manage and access your ISO documentation
+              Manage your ISO 9001:2015 documentation
             </p>
           </div>
           
@@ -79,7 +81,7 @@ const Dashboard = () => {
               ))
             ) : (
               <div className="col-span-full text-center py-10">
-                <p className="text-gray-500">No documents found</p>
+                <p className="text-gray-500">No ISO 9001:2015 documents found</p>
               </div>
             )}
           </div>
