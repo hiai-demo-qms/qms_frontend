@@ -7,6 +7,7 @@ export interface Document {
   standard: string;
   lastUpdated: string;
   version: string;
+  filePath?: string; // Đường dẫn đến file PDF
 }
 
 export const documents: Document[] = [
@@ -18,6 +19,7 @@ export const documents: Document[] = [
     standard: "ISO 9001:2015",
     lastUpdated: "2023-05-15",
     version: "3.2",
+    filePath: "/documents/quality-manual.pdf", // Ví dụ đường dẫn
   },
   {
     id: "doc-2",
@@ -27,6 +29,7 @@ export const documents: Document[] = [
     standard: "ISO 9001:2015",
     lastUpdated: "2023-04-22",
     version: "2.1",
+    filePath: "/documents/risk-assessment.pdf",
   },
   {
     id: "doc-3",
@@ -36,6 +39,7 @@ export const documents: Document[] = [
     standard: "ISO 9001:2015",
     lastUpdated: "2023-06-10",
     version: "1.5",
+    filePath: "/documents/internal-audit.pdf",
   },
   {
     id: "doc-4",
@@ -45,6 +49,7 @@ export const documents: Document[] = [
     standard: "ISO 9001:2015",
     lastUpdated: "2023-03-18",
     version: "2.3",
+    filePath: "/documents/document-control.pdf",
   },
   {
     id: "doc-5",
@@ -54,6 +59,7 @@ export const documents: Document[] = [
     standard: "ISO 9001:2015",
     lastUpdated: "2023-02-05",
     version: "1.2",
+    filePath: "/documents/management-review.pdf",
   },
   {
     id: "doc-6",
@@ -63,6 +69,7 @@ export const documents: Document[] = [
     standard: "ISO 9001:2015",
     lastUpdated: "2023-01-30",
     version: "2.0",
+    filePath: "/documents/corrective-action.pdf",
   },
   {
     id: "doc-7",
@@ -72,6 +79,7 @@ export const documents: Document[] = [
     standard: "ISO 14001:2015",
     lastUpdated: "2023-05-20",
     version: "1.1",
+    filePath: "/documents/environmental-plan.pdf",
   },
   {
     id: "doc-8",
@@ -81,6 +89,7 @@ export const documents: Document[] = [
     standard: "ISO 27001:2013",
     lastUpdated: "2023-04-12",
     version: "3.0",
+    filePath: "/documents/security-policy.pdf",
   },
 ];
 

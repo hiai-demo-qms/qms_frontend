@@ -2,7 +2,6 @@
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { FileText } from "lucide-react";
-import { Link } from "react-router-dom";
 import type { Document } from "@/data/documents";
 
 interface DocumentCardProps {
@@ -10,6 +9,16 @@ interface DocumentCardProps {
 }
 
 const DocumentCard = ({ document }: DocumentCardProps) => {
+  const handleViewDocument = () => {
+    // Mở file PDF trong tab mới
+    if (document.filePath) {
+      window.open(document.filePath, '_blank');
+    } else {
+      // Fallback nếu không có filePath, vẫn chuyển đến trang chi tiết
+      window.location.href = `/document/${document.id}`;
+    }
+  };
+
   return (
     <Card className="w-full hover:shadow-md transition-shadow duration-300">
       <CardHeader className="pb-2">
@@ -36,10 +45,8 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
         <div className="text-xs text-gray-500">
           Last updated: {document.lastUpdated}
         </div>
-        <Button variant="outline" size="sm" asChild>
-          <Link to={`/document/${document.id}`}>
-            View Document
-          </Link>
+        <Button variant="outline" size="sm" onClick={handleViewDocument}>
+          View Document
         </Button>
       </CardFooter>
     </Card>
