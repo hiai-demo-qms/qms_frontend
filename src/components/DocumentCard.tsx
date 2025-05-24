@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText } from "lucide-react";
+import { FileText, User } from "lucide-react";
 import type { Document } from "@/data/documents";
 
 interface DocumentCardProps {
@@ -10,11 +10,9 @@ interface DocumentCardProps {
 
 const DocumentCard = ({ document }: DocumentCardProps) => {
   const handleViewDocument = () => {
-    // Mở file PDF trong tab mới
     if (document.filePath) {
       window.open(document.filePath, '_blank');
     } else {
-      // Fallback nếu không có filePath, vẫn chuyển đến trang chi tiết
       window.location.href = `/document/${document.id}`;
     }
   };
@@ -36,6 +34,10 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
         </div>
       </CardHeader>
       <CardContent className="pb-2">
+        <div className="flex items-center text-sm text-gray-600 mb-2">
+          <User className="mr-1 h-4 w-4" />
+          <span>By {document.authorName}</span>
+        </div>
         <div className="flex items-center justify-between text-sm text-gray-500 mt-2">
           <div>Category: {document.category}</div>
           <div>Version: {document.version}</div>

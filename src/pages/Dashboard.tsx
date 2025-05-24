@@ -21,7 +21,8 @@ const Dashboard = () => {
     const matchesSearch = 
       doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       doc.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      doc.standard.toLowerCase().includes(searchTerm.toLowerCase());
+      doc.standard.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      doc.authorName.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStandard = doc.standard === selectedStandard;
     
     return matchesCategory && (searchTerm === "" || matchesSearch) && matchesStandard;
@@ -46,14 +47,14 @@ const Dashboard = () => {
               Welcome, {user?.name || "User"}
             </h1>
             <p className="text-gray-500">
-              Manage your ISO 9001:2015 documentation
+              Browse all documents shared by the community
             </p>
           </div>
           
           {/* Search */}
           <div className="mb-6 flex items-center gap-2">
             <Input
-              placeholder="Search documents..."
+              placeholder="Search documents, authors..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="max-w-md"
@@ -81,7 +82,7 @@ const Dashboard = () => {
               ))
             ) : (
               <div className="col-span-full text-center py-10">
-                <p className="text-gray-500">No ISO 9001:2015 documents found</p>
+                <p className="text-gray-500">No documents found</p>
               </div>
             )}
           </div>

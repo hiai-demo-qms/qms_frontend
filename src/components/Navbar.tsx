@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 
 const Navbar = () => {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, isAdmin, logout } = useAuth();
   const navigate = useNavigate();
 
   return (
@@ -24,15 +24,26 @@ const Navbar = () => {
               className="hidden md:inline-flex"
               onClick={() => navigate('/dashboard')}
             >
-              Dashboard
+              All Documents
             </Button>
-            <Button 
-              variant="outline"
-              className="hidden md:inline-flex"
-              onClick={() => navigate('/admin')}
-            >
-              Admin
-            </Button>
+            {!isAdmin && (
+              <Button 
+                variant="outline"
+                className="hidden md:inline-flex"
+                onClick={() => navigate('/my-documents')}
+              >
+                My Documents
+              </Button>
+            )}
+            {isAdmin && (
+              <Button 
+                variant="outline"
+                className="hidden md:inline-flex"
+                onClick={() => navigate('/admin')}
+              >
+                Admin
+              </Button>
+            )}
             <Button
               onClick={logout}
               variant="ghost"

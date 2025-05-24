@@ -7,8 +7,42 @@ export interface Document {
   standard: string;
   lastUpdated: string;
   version: string;
-  filePath?: string; // Đường dẫn đến file PDF
+  filePath?: string;
+  authorId: string;
+  authorName: string;
 }
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: 'admin' | 'user';
+  createdAt: string;
+}
+
+export const users: User[] = [
+  {
+    id: "user-1",
+    name: "Nguyễn Văn A",
+    email: "admin@company.com",
+    role: "admin",
+    createdAt: "2023-01-15"
+  },
+  {
+    id: "user-2", 
+    name: "Trần Thị B",
+    email: "user1@company.com",
+    role: "user",
+    createdAt: "2023-02-20"
+  },
+  {
+    id: "user-3",
+    name: "Lê Văn C", 
+    email: "user2@company.com",
+    role: "user",
+    createdAt: "2023-03-10"
+  }
+];
 
 export const documents: Document[] = [
   {
@@ -19,7 +53,9 @@ export const documents: Document[] = [
     standard: "ISO 9001:2015",
     lastUpdated: "2023-05-15",
     version: "3.2",
-    filePath: "/documents/quality-manual.pdf", // Ví dụ đường dẫn
+    filePath: "/documents/quality-manual.pdf",
+    authorId: "user-1",
+    authorName: "Nguyễn Văn A"
   },
   {
     id: "doc-2",
@@ -30,6 +66,8 @@ export const documents: Document[] = [
     lastUpdated: "2023-04-22",
     version: "2.1",
     filePath: "/documents/risk-assessment.pdf",
+    authorId: "user-2",
+    authorName: "Trần Thị B"
   },
   {
     id: "doc-3",
@@ -40,6 +78,8 @@ export const documents: Document[] = [
     lastUpdated: "2023-06-10",
     version: "1.5",
     filePath: "/documents/internal-audit.pdf",
+    authorId: "user-1",
+    authorName: "Nguyễn Văn A"
   },
   {
     id: "doc-4",
@@ -50,6 +90,8 @@ export const documents: Document[] = [
     lastUpdated: "2023-03-18",
     version: "2.3",
     filePath: "/documents/document-control.pdf",
+    authorId: "user-3",
+    authorName: "Lê Văn C"
   },
   {
     id: "doc-5",
@@ -60,6 +102,8 @@ export const documents: Document[] = [
     lastUpdated: "2023-02-05",
     version: "1.2",
     filePath: "/documents/management-review.pdf",
+    authorId: "user-2",
+    authorName: "Trần Thị B"
   },
   {
     id: "doc-6",
@@ -70,6 +114,8 @@ export const documents: Document[] = [
     lastUpdated: "2023-01-30",
     version: "2.0",
     filePath: "/documents/corrective-action.pdf",
+    authorId: "user-1",
+    authorName: "Nguyễn Văn A"
   },
   {
     id: "doc-7",
@@ -80,6 +126,8 @@ export const documents: Document[] = [
     lastUpdated: "2023-05-20",
     version: "1.1",
     filePath: "/documents/environmental-plan.pdf",
+    authorId: "user-3",
+    authorName: "Lê Văn C"
   },
   {
     id: "doc-8",
@@ -90,6 +138,8 @@ export const documents: Document[] = [
     lastUpdated: "2023-04-12",
     version: "3.0",
     filePath: "/documents/security-policy.pdf",
+    authorId: "user-2",
+    authorName: "Trần Thị B"
   },
 ];
 

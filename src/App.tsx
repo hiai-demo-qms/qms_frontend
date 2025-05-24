@@ -9,6 +9,7 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
+import MyDocuments from "./pages/MyDocuments";
 import DocumentView from "./pages/DocumentView";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
@@ -17,9 +18,23 @@ const queryClient = new QueryClient();
 
 // Protected route wrapper component
 const ProtectedRoute = ({ element }: { element: React.ReactNode }) => {
-  // In a real app, this would check localStorage or session state
   const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
   return isLoggedIn ? <>{element}</> : <Navigate to="/login" />;
+};
+
+// Admin route wrapper component
+const AdminRoute = ({ element }: { element: React.ReactNode }) => {
+  const { isAuthenticated, isAdmin } = useAuth();
+  
+  if (!isAuthenticated) {
+    return <Navigate to="/login" />;
+  }
+  
+  if (!isAdmin) {
+    return <Navigate to="/dashboard" />;
+  }
+  
+  return <>{element}</>;
 };
 
 // Main App wrapper that includes providers
@@ -34,8 +49,12 @@ const AppContent = () => {
         element={<ProtectedRoute element={<Dashboard />} />} 
       />
       <Route 
+        path="/my-documents" 
+        element={<ProtectedRoute element={<MyDocuments />} />} 
+      />
+      <Route 
         path="/admin" 
-        element={<ProtectedRoute element={<Admin />} />} 
+        element={<AdminRoute element={<Admin />} />} 
       />
       <Route 
         path="/document/:id" 

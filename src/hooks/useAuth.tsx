@@ -1,12 +1,14 @@
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/components/ui/use-toast";
+import { users } from "@/data/documents";
 
 interface User {
   id: string;
   email: string;
   name: string;
+  role: 'admin' | 'user';
 }
 
 interface AuthContextType {
@@ -15,6 +17,7 @@ interface AuthContextType {
   register: (name: string, email: string, password: string) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
+  isAdmin: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -23,30 +26,58 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
 
-  // In a real app, this would connect to a backend for authentication
+  useEffect(() => {
+    // Check if user is already logged in
+    const storedUserId = localStorage.getItem("userId");
+    if (storedUserId) {
+      const foundUser = users.find(u => u.id === storedUserId);
+      if (foundUser) {
+        setUser({
+          id: foundUser.id,
+          email: foundUser.email,
+          name: foundUser.name,
+          role: foundUser.role
+        });
+      }
+    }
+  }, []);
+
   const login = async (email: string, password: string) => {
     try {
-      // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
       
-      // Simple validation
       if (email === "" || password === "") {
         throw new Error("Please enter both email and password");
       }
 
-      // Mock successful login
-      setUser({
-        id: "1",
-        email,
-        name: email.split("@")[0],
-      });
-      
+      // Find user by email
+      const foundUser = users.find(u => u.email === email);
+      if (!foundUser) {
+        throw new Error("Invalid email or password");
+      }
+
+      const loggedInUser = {
+        id: foundUser.id,
+        email: foundUser.email,
+        name: foundUser.name,
+        role: foundUser.role
+      };
+
+      setUser(loggedInUser);
       localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("userId", foundUser.id);
+      
       toast({
         title: "Success",
         description: "You have successfully logged in",
       });
-      navigate("/dashboard");
+      
+      // Redirect based on role
+      if (foundUser.role === 'admin') {
+        navigate("/admin");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (error: any) {
       toast({
         title: "Login Failed",
@@ -58,10 +89,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const register = async (name: string, email: string, password: string) => {
     try {
-      // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
       
-      // Simple validation
       if (!name || !email || !password) {
         throw new Error("Please fill in all fields");
       }
@@ -70,14 +99,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         throw new Error("Password must be at least 6 characters");
       }
 
-      // Mock successful registration
-      setUser({
-        id: "1",
+      // Check if email already exists
+      const existingUser = users.find(u => u.email === email);
+      if (existingUser) {
+        throw new Error("Email already exists");
+      }
+
+      const newUser = {
+        id: `user-${Date.now()}`,
         email,
         name,
-      });
-      
+        role: 'user' as const
+      };
+
+      setUser(newUser);
       localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("userId", newUser.id);
+      
       toast({
         title: "Success",
         description: "Account created successfully",
@@ -95,6 +133,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const logout = () => {
     setUser(null);
     localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("userId");
     toast({
       title: "Logged Out",
       description: "You have successfully logged out",
@@ -110,6 +149,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         register,
         logout,
         isAuthenticated: !!user,
+        isAdmin: user?.role === 'admin'
       }}
     >
       {children}
