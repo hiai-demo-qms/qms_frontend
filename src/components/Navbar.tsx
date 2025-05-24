@@ -2,9 +2,10 @@
 import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
+import { User } from "lucide-react";
 
 const Navbar = () => {
-  const { isAuthenticated, isAdmin, logout } = useAuth();
+  const { isAuthenticated, isAdmin, logout, user } = useAuth();
   const navigate = useNavigate();
 
   return (
@@ -44,6 +45,17 @@ const Navbar = () => {
                 Admin
               </Button>
             )}
+            <Button
+              variant="outline"
+              className="hidden md:inline-flex"
+              onClick={() => navigate('/profile')}
+            >
+              <User className="h-4 w-4 mr-2" />
+              Profile
+            </Button>
+            <div className="hidden md:flex items-center text-sm text-gray-600 mr-2">
+              Welcome, {user?.name}
+            </div>
             <Button
               onClick={logout}
               variant="ghost"

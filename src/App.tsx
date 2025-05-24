@@ -12,6 +12,7 @@ import Dashboard from "./pages/Dashboard";
 import MyDocuments from "./pages/MyDocuments";
 import DocumentView from "./pages/DocumentView";
 import Admin from "./pages/Admin";
+import Profile from "./pages/Profile";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -51,6 +52,10 @@ const AppContent = () => {
       <Route 
         path="/my-documents" 
         element={<ProtectedRoute element={<MyDocuments />} />} 
+      />
+      <Route 
+        path="/profile" 
+        element={<ProtectedRoute element={<Profile />} />} 
       />
       <Route 
         path="/admin" 
