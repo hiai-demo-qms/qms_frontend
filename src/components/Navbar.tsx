@@ -26,6 +26,13 @@ const Navbar = () => {
             >
               Dashboard
             </Button>
+            <Button 
+              variant="outline"
+              className="hidden md:inline-flex"
+              onClick={() => navigate('/admin')}
+            >
+              Admin
+            </Button>
             <Button
               onClick={logout}
               variant="ghost"

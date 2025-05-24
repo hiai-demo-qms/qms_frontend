@@ -10,6 +10,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import DocumentView from "./pages/DocumentView";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +32,10 @@ const AppContent = () => {
       <Route 
         path="/dashboard" 
         element={<ProtectedRoute element={<Dashboard />} />} 
+      />
+      <Route 
+        path="/admin" 
+        element={<ProtectedRoute element={<Admin />} />} 
       />
       <Route 
         path="/document/:id" 
