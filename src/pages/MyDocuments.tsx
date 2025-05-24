@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
-import { Plus, Edit, Trash2, FileText } from "lucide-react";
+import { Plus, Edit, Trash2, FileText, Upload } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import { documents, categories, standards, type Document } from "@/data/documents";
 
@@ -22,6 +22,7 @@ const MyDocuments = () => {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingDocument, setEditingDocument] = useState<Document | null>(null);
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [formData, setFormData] = useState({
     title: "",
     category: "",
@@ -40,6 +41,23 @@ const MyDocuments = () => {
       version: "",
       filePath: ""
     });
+    setUploadedFile(null);
+  };
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.type !== "application/pdf") {
+        toast({
+          title: "Error",
+          description: "Please upload a PDF file only",
+          variant: "destructive",
+        });
+        return;
+      }
+      setUploadedFile(file);
+      console.log("File uploaded:", file.name);
+    }
   };
 
   const handleAddDocument = () => {
@@ -52,6 +70,18 @@ const MyDocuments = () => {
       return;
     }
 
+    if (!uploadedFile) {
+      toast({
+        title: "Error",
+        description: "Please upload a PDF file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Simulate file upload - in a real app, you'd upload to a server
+    const filePath = `/documents/${uploadedFile.name}`;
+
     const newDocument: Document = {
       id: `doc-${Date.now()}`,
       title: formData.title,
@@ -60,7 +90,7 @@ const MyDocuments = () => {
       standard: formData.standard || "ISO 9001:2015",
       lastUpdated: new Date().toISOString().split('T')[0],
       version: formData.version || "1.0",
-      filePath: formData.filePath,
+      filePath: filePath,
       authorId: user?.id || "",
       authorName: user?.name || ""
     };
@@ -212,13 +242,22 @@ const MyDocuments = () => {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="filePath">File Path</Label>
-                  <Input
-                    id="filePath"
-                    value={formData.filePath}
-                    onChange={(e) => setFormData({...formData, filePath: e.target.value})}
-                    placeholder="/documents/example.pdf"
-                  />
+                  <Label htmlFor="file-upload">Upload PDF File *</Label>
+                  <div className="flex items-center space-x-2">
+                    <Input
+                      id="file-upload"
+                      type="file"
+                      accept=".pdf"
+                      onChange={handleFileUpload}
+                      className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-qms-blue file:text-white hover:file:bg-qms-lightBlue"
+                    />
+                    <Upload className="h-4 w-4 text-gray-400" />
+                  </div>
+                  {uploadedFile && (
+                    <p className="text-sm text-green-600 mt-1">
+                      ✓ {uploadedFile.name}
+                    </p>
+                  )}
                 </div>
               </div>
               <DialogFooter>
