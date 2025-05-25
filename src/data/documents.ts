@@ -1,4 +1,3 @@
-
 export interface Document {
   id: string;
   title: string;
@@ -45,6 +44,18 @@ export const users: User[] = [
 ];
 
 export const documents: Document[] = [
+  {
+    id: "doc-demo",
+    title: "Demo Quality Manual",
+    category: "Quality Management",
+    description: "Demo PDF file for testing document viewing functionality",
+    standard: "ISO 9001:2015",
+    lastUpdated: "2024-01-15",
+    version: "1.0",
+    filePath: "/documents/demo-quality-manual.pdf",
+    authorId: "user-1",
+    authorName: "Nguyễn Văn A"
+  },
   {
     id: "doc-1",
     title: "Quality Manual",
