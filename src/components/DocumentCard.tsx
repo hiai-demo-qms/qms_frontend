@@ -20,91 +20,126 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
   };
 
   return (
-    <Card className="w-full hover:shadow-md transition-shadow duration-300">
-      <CardHeader className="pb-2">
-        <div className="flex justify-between items-start">
-          <div className="flex items-start">
-            <FileText className="mr-2 h-5 w-5 text-qms-blue mt-0.5" />
-            <div>
-              <CardTitle className="text-lg font-medium">{document.title}</CardTitle>
-              <CardDescription className="text-sm mt-1">{document.description}</CardDescription>
+    <Card className="w-full h-full flex flex-col hover:shadow-lg transition-all duration-300 border-0 shadow-sm hover:shadow-md hover:border-gray-200 bg-white">
+      <CardHeader className="pb-3 flex-shrink-0">
+        <div className="flex justify-between items-start gap-3">
+          <div className="flex items-start gap-3 min-w-0 flex-1">
+            <div className="mt-1 flex-shrink-0">
+              <FileText className="h-5 w-5 text-qms-blue" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <CardTitle className="text-lg font-semibold text-gray-900 line-clamp-2 leading-tight mb-2">
+                {document.title}
+              </CardTitle>
+              <CardDescription className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
+                {document.description}
+              </CardDescription>
             </div>
           </div>
-          <div className="px-2 py-1 bg-qms-gray rounded-md text-xs font-medium">
-            {document.standard}
+          <div className="flex-shrink-0">
+            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-qms-blue/10 text-qms-blue border border-qms-blue/20">
+              {document.standard}
+            </span>
           </div>
         </div>
       </CardHeader>
-      <CardContent className="pb-2">
-        <div className="flex items-center text-sm text-gray-600 mb-2">
-          <User className="mr-1 h-4 w-4" />
-          <span>By {document.authorName}</span>
-        </div>
-        <div className="flex items-center justify-between text-sm text-gray-500 mt-2">
-          <div>Category: {document.category}</div>
-          <div>Version: {document.version}</div>
+      
+      <CardContent className="pb-3 flex-grow">
+        <div className="space-y-3">
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <User className="h-4 w-4 flex-shrink-0" />
+            <span className="truncate">By {document.authorName}</span>
+          </div>
+          
+          <div className="flex items-center justify-between text-sm">
+            <div className="flex items-center gap-1">
+              <span className="text-gray-500">Category:</span>
+              <span className="font-medium text-gray-700 truncate">{document.category}</span>
+            </div>
+            <div className="flex items-center gap-1 flex-shrink-0">
+              <span className="text-gray-500">v</span>
+              <span className="font-medium text-gray-700">{document.version}</span>
+            </div>
+          </div>
         </div>
       </CardContent>
-      <CardFooter className="flex justify-between pt-2">
-        <div className="text-xs text-gray-500">
-          Last updated: {document.lastUpdated}
-        </div>
-        <div className="flex space-x-2">
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="outline" size="sm">
-                <Info className="mr-2 h-4 w-4" />
-                Document Info
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-80">
-              <div className="space-y-3">
-                <h3 className="text-lg font-semibold">Document Information</h3>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="font-medium">Document ID:</span>
-                    <span>{document.id}</span>
+      
+      <CardFooter className="pt-3 flex-shrink-0 border-t border-gray-100">
+        <div className="w-full space-y-3">
+          <div className="text-xs text-gray-500">
+            Last updated: {document.lastUpdated}
+          </div>
+          
+          <div className="flex gap-2">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className="flex-1 text-xs h-8">
+                  <Info className="mr-1.5 h-3.5 w-3.5" />
+                  Info
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80" align="start">
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="text-base font-semibold text-gray-900 mb-3">Document Information</h3>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">Title:</span>
-                    <span className="text-right max-w-48 truncate">{document.title}</span>
+                  
+                  <div className="space-y-2.5 text-sm">
+                    <div className="flex justify-between items-center py-1">
+                      <span className="font-medium text-gray-600">Document ID:</span>
+                      <span className="text-gray-900 font-mono text-xs">{document.id}</span>
+                    </div>
+                    <div className="flex justify-between items-start py-1">
+                      <span className="font-medium text-gray-600">Title:</span>
+                      <span className="text-right max-w-48 text-gray-900 break-words">{document.title}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-1">
+                      <span className="font-medium text-gray-600">Category:</span>
+                      <span className="text-gray-900">{document.category}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-1">
+                      <span className="font-medium text-gray-600">Standard:</span>
+                      <span className="text-gray-900">{document.standard}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-1">
+                      <span className="font-medium text-gray-600">Version:</span>
+                      <span className="text-gray-900">{document.version}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-1">
+                      <span className="font-medium text-gray-600">Last Updated:</span>
+                      <span className="text-gray-900">{document.lastUpdated}</span>
+                    </div>
+                    <div className="flex justify-between items-center py-1">
+                      <span className="font-medium text-gray-600">Author:</span>
+                      <span className="text-gray-900">{document.authorName}</span>
+                    </div>
+                    <div className="flex justify-between items-start py-1">
+                      <span className="font-medium text-gray-600">File Path:</span>
+                      <span className="text-right max-w-48 text-gray-900 break-all text-xs font-mono">
+                        {document.filePath || 'No file'}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">Category:</span>
-                    <span>{document.category}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">Standard:</span>
-                    <span>{document.standard}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">Version:</span>
-                    <span>{document.version}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">Last Updated:</span>
-                    <span>{document.lastUpdated}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">Author:</span>
-                    <span>{document.authorName}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="font-medium">File Path:</span>
-                    <span className="text-right max-w-48 truncate">{document.filePath || 'No file'}</span>
+                  
+                  <Separator className="my-3" />
+                  
+                  <div>
+                    <h4 className="font-medium text-gray-900 mb-2">Description</h4>
+                    <p className="text-sm text-gray-600 leading-relaxed">{document.description}</p>
                   </div>
                 </div>
-                <Separator />
-                <div>
-                  <h4 className="font-medium mb-2">Description</h4>
-                  <p className="text-sm text-gray-600">{document.description}</p>
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
-          <Button variant="outline" size="sm" onClick={handleViewDocument}>
-            View Document
-          </Button>
+              </PopoverContent>
+            </Popover>
+            
+            <Button 
+              variant="default" 
+              size="sm" 
+              onClick={handleViewDocument}
+              className="flex-1 text-xs h-8 bg-qms-blue hover:bg-qms-lightBlue"
+            >
+              View Document
+            </Button>
+          </div>
         </div>
       </CardFooter>
     </Card>
