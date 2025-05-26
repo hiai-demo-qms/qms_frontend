@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -23,6 +22,7 @@ const MyDocuments = () => {
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingDocument, setEditingDocument] = useState<Document | null>(null);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [editUploadedFile, setEditUploadedFile] = useState<File | null>(null);
   const [formData, setFormData] = useState({
     title: "",
     category: "",
@@ -42,6 +42,7 @@ const MyDocuments = () => {
       filePath: ""
     });
     setUploadedFile(null);
+    setEditUploadedFile(null);
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,6 +58,22 @@ const MyDocuments = () => {
       }
       setUploadedFile(file);
       console.log("File uploaded:", file.name);
+    }
+  };
+
+  const handleEditFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      if (file.type !== "application/pdf") {
+        toast({
+          title: "Error",
+          description: "Please upload a PDF file only",
+          variant: "destructive",
+        });
+        return;
+      }
+      setEditUploadedFile(file);
+      console.log("Edit file uploaded:", file.name);
     }
   };
 
@@ -114,6 +131,12 @@ const MyDocuments = () => {
       return;
     }
 
+    // Use new uploaded file path if a file was uploaded, otherwise keep existing path
+    let filePath = editingDocument.filePath;
+    if (editUploadedFile) {
+      filePath = `/documents/${editUploadedFile.name}`;
+    }
+
     const updatedDocument: Document = {
       ...editingDocument,
       title: formData.title,
@@ -121,7 +144,7 @@ const MyDocuments = () => {
       description: formData.description,
       standard: formData.standard,
       version: formData.version,
-      filePath: formData.filePath,
+      filePath: filePath,
       lastUpdated: new Date().toISOString().split('T')[0]
     };
 
@@ -155,6 +178,7 @@ const MyDocuments = () => {
       version: document.version,
       filePath: document.filePath || ""
     });
+    setEditUploadedFile(null);
     setIsEditDialogOpen(true);
   };
 
@@ -393,13 +417,25 @@ const MyDocuments = () => {
                 />
               </div>
               <div>
-                <Label htmlFor="edit-filePath">File Path</Label>
-                <Input
-                  id="edit-filePath"
-                  value={formData.filePath}
-                  onChange={(e) => setFormData({...formData, filePath: e.target.value})}
-                  placeholder="/documents/example.pdf"
-                />
+                <Label htmlFor="edit-file-upload">Upload New PDF File (Optional)</Label>
+                <div className="flex items-center space-x-2">
+                  <Input
+                    id="edit-file-upload"
+                    type="file"
+                    accept=".pdf"
+                    onChange={handleEditFileUpload}
+                    className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-qms-blue file:text-white hover:file:bg-qms-lightBlue"
+                  />
+                  <Upload className="h-4 w-4 text-gray-400" />
+                </div>
+                {editUploadedFile && (
+                  <p className="text-sm text-green-600 mt-1">
+                    ✓ {editUploadedFile.name}
+                  </p>
+                )}
+                <p className="text-xs text-gray-500 mt-1">
+                  Current file: {formData.filePath ? formData.filePath.split('/').pop() : 'No file'}
+                </p>
               </div>
             </div>
             <DialogFooter>
