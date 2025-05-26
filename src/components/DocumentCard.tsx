@@ -1,7 +1,9 @@
 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, User } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Separator } from "@/components/ui/separator";
+import { FileText, User, Info } from "lucide-react";
 import type { Document } from "@/data/documents";
 
 interface DocumentCardProps {
@@ -47,9 +49,63 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
         <div className="text-xs text-gray-500">
           Last updated: {document.lastUpdated}
         </div>
-        <Button variant="outline" size="sm" onClick={handleViewDocument}>
-          View Document
-        </Button>
+        <div className="flex space-x-2">
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Info className="mr-2 h-4 w-4" />
+                Document Info
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-80">
+              <div className="space-y-3">
+                <h3 className="text-lg font-semibold">Document Information</h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between">
+                    <span className="font-medium">Document ID:</span>
+                    <span>{document.id}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-medium">Title:</span>
+                    <span className="text-right max-w-48 truncate">{document.title}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-medium">Category:</span>
+                    <span>{document.category}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-medium">Standard:</span>
+                    <span>{document.standard}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-medium">Version:</span>
+                    <span>{document.version}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-medium">Last Updated:</span>
+                    <span>{document.lastUpdated}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-medium">Author:</span>
+                    <span>{document.authorName}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="font-medium">File Path:</span>
+                    <span className="text-right max-w-48 truncate">{document.filePath || 'No file'}</span>
+                  </div>
+                </div>
+                <Separator />
+                <div>
+                  <h4 className="font-medium mb-2">Description</h4>
+                  <p className="text-sm text-gray-600">{document.description}</p>
+                </div>
+              </div>
+            </PopoverContent>
+          </Popover>
+          <Button variant="outline" size="sm" onClick={handleViewDocument}>
+            View Document
+          </Button>
+        </div>
       </CardFooter>
     </Card>
   );

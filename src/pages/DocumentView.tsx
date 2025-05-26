@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
@@ -101,58 +100,6 @@ const DocumentView = () => {
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-lg font-semibold">Document Contents</h2>
                 <div className="flex space-x-2">
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button variant="outline" size="sm">
-                        <Info className="mr-2 h-4 w-4" />
-                        Document Info
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-80">
-                      <div className="space-y-3">
-                        <h3 className="text-lg font-semibold">Document Information</h3>
-                        <div className="space-y-2 text-sm">
-                          <div className="flex justify-between">
-                            <span className="font-medium">Document ID:</span>
-                            <span>{document.id}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="font-medium">Title:</span>
-                            <span className="text-right max-w-48 truncate">{document.title}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="font-medium">Category:</span>
-                            <span>{document.category}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="font-medium">Standard:</span>
-                            <span>{document.standard}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="font-medium">Version:</span>
-                            <span>{document.version}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="font-medium">Last Updated:</span>
-                            <span>{document.lastUpdated}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="font-medium">Author:</span>
-                            <span>{document.authorName}</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className="font-medium">File Path:</span>
-                            <span className="text-right max-w-48 truncate">{document.filePath || 'No file'}</span>
-                          </div>
-                        </div>
-                        <Separator />
-                        <div>
-                          <h4 className="font-medium mb-2">Description</h4>
-                          <p className="text-sm text-gray-600">{document.description}</p>
-                        </div>
-                      </div>
-                    </PopoverContent>
-                  </Popover>
                   <Button variant="outline" size="sm">
                     <Download className="mr-2 h-4 w-4" />
                     Download
