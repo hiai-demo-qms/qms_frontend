@@ -82,6 +82,10 @@ const MyDocuments = () => {
     console.log("Analyzing document:", uploadedFile?.name);
   };
 
+  const handleAnalyzeEditDocument = () => {
+    console.log("Analyzing edit document:", editUploadedFile?.name);
+  };
+
   const handleAddDocument = () => {
     if (!formData.title || !formData.category || !formData.description) {
       toast({
@@ -362,7 +366,7 @@ const MyDocuments = () => {
 
         {/* Edit Dialog */}
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Edit Document</DialogTitle>
               <DialogDescription>
@@ -448,6 +452,12 @@ const MyDocuments = () => {
                   Current file: {formData.filePath ? formData.filePath.split('/').pop() : 'No file'}
                 </p>
               </div>
+
+              {/* Document Analysis Component for Edit Dialog */}
+              <DocumentAnalysis 
+                uploadedFile={editUploadedFile}
+                onAnalyze={handleAnalyzeEditDocument}
+              />
             </div>
             <DialogFooter>
               <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
