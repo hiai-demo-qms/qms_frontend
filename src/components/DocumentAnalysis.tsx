@@ -2,15 +2,24 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CheckCircle, X, FileText } from "lucide-react";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { CheckCircle, X, FileText, ChevronDown, ChevronRight } from "lucide-react";
 
 interface AnalysisResult {
   overallCompliance: number;
-  clauses: Array<{
+  categories: Array<{
     id: string;
     title: string;
     compliance: number;
     status: 'pass' | 'fail';
+    expanded: boolean;
+    items: Array<{
+      title: string;
+      score: number;
+      status: 'pass' | 'fail';
+      keywords: string;
+    }>;
   }>;
 }
 
@@ -22,6 +31,17 @@ interface DocumentAnalysisProps {
 const DocumentAnalysis = ({ uploadedFile, onAnalyze }: DocumentAnalysisProps) => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+
+  const toggleCategory = (categoryId: string) => {
+    const newExpanded = new Set(expandedCategories);
+    if (newExpanded.has(categoryId)) {
+      newExpanded.delete(categoryId);
+    } else {
+      newExpanded.add(categoryId);
+    }
+    setExpandedCategories(newExpanded);
+  };
 
   const handleAnalyze = async () => {
     if (!uploadedFile) return;
@@ -33,13 +53,56 @@ const DocumentAnalysis = ({ uploadedFile, onAnalyze }: DocumentAnalysisProps) =>
     setTimeout(() => {
       setAnalysisResult({
         overallCompliance: 56,
-        clauses: [
-          { id: "4.1", title: "Understanding the organization", compliance: 80, status: 'pass' },
-          { id: "4.2", title: "Understanding interested parties", compliance: 60, status: 'pass' },
-          { id: "4.3", title: "Determining QMS scope", compliance: 90, status: 'pass' },
-          { id: "5.1", title: "Leadership and commitment", compliance: 40, status: 'fail' },
+        categories: [
+          { 
+            id: "document-info", 
+            title: "Thông tin định danh tài liệu - ĐẠT (6.7/1.0)", 
+            compliance: 67, 
+            status: 'pass',
+            expanded: true,
+            items: [
+              { title: "Mã số tài liệu", score: 7.98, status: 'pass', keywords: "mã số, code" },
+              { title: "Tên tài liệu", score: 8.63, status: 'pass', keywords: "" },
+              { title: "Phiên bản", score: 5.92, status: 'pass', keywords: "" },
+              { title: "Ngày ban hành", score: 3.35, status: 'pass', keywords: "" },
+              { title: "Ngày hiệu lực", score: 5.96, status: 'pass', keywords: "" }
+            ]
+          },
+          { 
+            id: "version-management", 
+            title: "Quản lý phiên bản - ĐẠT (7.5/1.0)", 
+            compliance: 75, 
+            status: 'pass',
+            expanded: false,
+            items: []
+          },
+          { 
+            id: "review-audit", 
+            title: "Phần phối và kiểm soát - ĐẠT (6.6/1.0)", 
+            compliance: 66, 
+            status: 'pass',
+            expanded: false,
+            items: []
+          },
+          { 
+            id: "content-structure", 
+            title: "Nội dung và cấu trúc - ĐẠT (6.3/1.0)", 
+            compliance: 63, 
+            status: 'pass',
+            expanded: false,
+            items: []
+          },
+          { 
+            id: "approval-authorization", 
+            title: "Phê duyệt và ủy quyền - ĐẠT (7.5/1.0)", 
+            compliance: 75, 
+            status: 'pass',
+            expanded: false,
+            items: []
+          }
         ]
       });
+      setExpandedCategories(new Set(["document-info"]));
       setIsAnalyzing(false);
     }, 2000);
   };
@@ -90,32 +153,65 @@ const DocumentAnalysis = ({ uploadedFile, onAnalyze }: DocumentAnalysisProps) =>
             </div>
 
             <div>
-              <h4 className="font-semibold mb-3">Clause Analysis:</h4>
+              <h4 className="font-semibold mb-3">Category Analysis:</h4>
               <div className="space-y-2">
-                {analysisResult.clauses.map((clause) => (
-                  <div 
-                    key={clause.id}
-                    className={`flex items-center gap-3 p-3 rounded-lg border-l-4 ${
-                      clause.status === 'pass' 
-                        ? 'border-green-500 bg-green-50' 
-                        : 'border-red-500 bg-red-50'
-                    }`}
-                  >
-                    <div className="flex-shrink-0">
-                      {clause.status === 'pass' ? (
-                        <CheckCircle className="h-5 w-5 text-green-500" />
-                      ) : (
-                        <X className="h-5 w-5 text-red-500" />
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-gray-900">
-                        Clause {clause.id}: {clause.title}
-                      </p>
-                    </div>
-                    <div className="text-right">
-                      <span className="font-bold text-gray-900">{clause.compliance}%</span>
-                    </div>
+                {analysisResult.categories.map((category) => (
+                  <div key={category.id} className="border rounded-lg">
+                    <Collapsible 
+                      open={expandedCategories.has(category.id)} 
+                      onOpenChange={() => toggleCategory(category.id)}
+                    >
+                      <CollapsibleTrigger asChild>
+                        <div className="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer">
+                          <div className="flex items-center gap-3">
+                            {expandedCategories.has(category.id) ? (
+                              <ChevronDown className="h-4 w-4" />
+                            ) : (
+                              <ChevronRight className="h-4 w-4" />
+                            )}
+                            <span className="font-medium">{category.title}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-600">{category.compliance}%</span>
+                            {category.status === 'pass' ? (
+                              <CheckCircle className="h-4 w-4 text-green-500" />
+                            ) : (
+                              <X className="h-4 w-4 text-red-500" />
+                            )}
+                          </div>
+                        </div>
+                      </CollapsibleTrigger>
+                      <CollapsibleContent>
+                        {category.items.length > 0 && (
+                          <div className="px-4 pb-4">
+                            <Table>
+                              <TableHeader>
+                                <TableRow>
+                                  <TableHead>Tiêu chí</TableHead>
+                                  <TableHead>Điểm</TableHead>
+                                  <TableHead>Trạng thái</TableHead>
+                                  <TableHead>Bắt buộc</TableHead>
+                                  <TableHead>Keywords tìm thấy</TableHead>
+                                </TableRow>
+                              </TableHeader>
+                              <TableBody>
+                                {category.items.map((item, index) => (
+                                  <TableRow key={index}>
+                                    <TableCell className="font-medium">{item.title}</TableCell>
+                                    <TableCell>{item.score}</TableCell>
+                                    <TableCell>ĐẠT</TableCell>
+                                    <TableCell>
+                                      <CheckCircle className="h-4 w-4 text-green-500" />
+                                    </TableCell>
+                                    <TableCell className="text-sm text-gray-600">{item.keywords}</TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                            </Table>
+                          </div>
+                        )}
+                      </CollapsibleContent>
+                    </Collapsible>
                   </div>
                 ))}
               </div>
