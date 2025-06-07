@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/components/ui/use-toast";
 import { Plus, Edit, Trash2, FileText, Upload } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import DocumentAnalysis from "@/components/DocumentAnalysis";
 import { documents, categories, standards, type Document } from "@/data/documents";
 
 const MyDocuments = () => {
@@ -75,6 +76,10 @@ const MyDocuments = () => {
       setEditUploadedFile(file);
       console.log("Edit file uploaded:", file.name);
     }
+  };
+
+  const handleAnalyzeDocument = () => {
+    console.log("Analyzing document:", uploadedFile?.name);
   };
 
   const handleAddDocument = () => {
@@ -200,7 +205,7 @@ const MyDocuments = () => {
                 Add Document
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-md">
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>Add New Document</DialogTitle>
                 <DialogDescription>
@@ -283,6 +288,12 @@ const MyDocuments = () => {
                     </p>
                   )}
                 </div>
+
+                {/* Document Analysis Component */}
+                <DocumentAnalysis 
+                  uploadedFile={uploadedFile}
+                  onAnalyze={handleAnalyzeDocument}
+                />
               </div>
               <DialogFooter>
                 <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
