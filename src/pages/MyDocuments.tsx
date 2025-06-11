@@ -12,6 +12,7 @@ import { toast } from "@/components/ui/use-toast";
 import { Plus, Edit, Trash2, FileText, Upload } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import DocumentAnalysis from "@/components/DocumentAnalysis";
+import SaveButton from "@/components/SaveButton";
 import { documents, categories, standards, type Document } from "@/data/documents";
 
 const MyDocuments = () => {
@@ -24,6 +25,7 @@ const MyDocuments = () => {
   const [editingDocument, setEditingDocument] = useState<Document | null>(null);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [editUploadedFile, setEditUploadedFile] = useState<File | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
     category: "",
@@ -84,6 +86,84 @@ const MyDocuments = () => {
 
   const handleAnalyzeEditDocument = () => {
     console.log("Analyzing edit document:", editUploadedFile?.name);
+  };
+
+  const handleSaveDraft = async () => {
+    if (!formData.title) {
+      toast({
+        title: "Error",
+        description: "Please enter a document title to save as draft",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSaving(true);
+
+    // Simulate save delay
+    setTimeout(() => {
+      const draftDocument: Document = {
+        id: `draft-${Date.now()}`,
+        title: `[DRAFT] ${formData.title}`,
+        category: formData.category || "Documentation",
+        description: formData.description || "Draft document",
+        standard: formData.standard || "ISO 9001:2015",
+        lastUpdated: new Date().toISOString().split('T')[0],
+        version: formData.version || "0.1",
+        filePath: uploadedFile ? `/documents/${uploadedFile.name}` : "",
+        authorId: user?.id || "",
+        authorName: user?.name || ""
+      };
+
+      setUserDocuments([...userDocuments, draftDocument]);
+      setIsSaving(false);
+      
+      toast({
+        title: "Success",
+        description: "Document saved as draft successfully",
+      });
+    }, 1000);
+  };
+
+  const handleSaveEditDraft = async () => {
+    if (!editingDocument || !formData.title) {
+      toast({
+        title: "Error",
+        description: "Please enter a document title to save changes",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSaving(true);
+
+    setTimeout(() => {
+      let filePath = editingDocument.filePath;
+      if (editUploadedFile) {
+        filePath = `/documents/${editUploadedFile.name}`;
+      }
+
+      const updatedDocument: Document = {
+        ...editingDocument,
+        title: formData.title.startsWith("[DRAFT]") ? formData.title : `[DRAFT] ${formData.title}`,
+        category: formData.category,
+        description: formData.description,
+        standard: formData.standard,
+        version: formData.version,
+        filePath: filePath,
+        lastUpdated: new Date().toISOString().split('T')[0]
+      };
+
+      setUserDocuments(userDocuments.map(doc => 
+        doc.id === editingDocument.id ? updatedDocument : doc
+      ));
+      setIsSaving(false);
+      
+      toast({
+        title: "Success",
+        description: "Document changes saved as draft",
+      });
+    }, 1000);
   };
 
   const handleAddDocument = () => {
@@ -148,7 +228,7 @@ const MyDocuments = () => {
 
     const updatedDocument: Document = {
       ...editingDocument,
-      title: formData.title,
+      title: formData.title.replace("[DRAFT] ", ""), // Remove draft prefix when publishing
       category: formData.category,
       description: formData.description,
       standard: formData.standard,
@@ -299,11 +379,16 @@ const MyDocuments = () => {
                   onAnalyze={handleAnalyzeDocument}
                 />
               </div>
-              <DialogFooter>
+              <DialogFooter className="flex gap-2">
                 <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
                   Cancel
                 </Button>
-                <Button onClick={handleAddDocument}>Add Document</Button>
+                <SaveButton 
+                  onSave={handleSaveDraft}
+                  isLoading={isSaving}
+                  disabled={!formData.title}
+                />
+                <Button onClick={handleAddDocument}>Publish Document</Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
@@ -334,7 +419,14 @@ const MyDocuments = () => {
               <TableBody>
                 {userDocuments.map((document) => (
                   <TableRow key={document.id}>
-                    <TableCell className="font-medium">{document.title}</TableCell>
+                    <TableCell className="font-medium">
+                      {document.title}
+                      {document.title.startsWith("[DRAFT]") && (
+                        <span className="ml-2 text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded">
+                          Draft
+                        </span>
+                      )}
+                    </TableCell>
                     <TableCell>{document.category}</TableCell>
                     <TableCell>{document.standard}</TableCell>
                     <TableCell>{document.version}</TableCell>
@@ -459,10 +551,15 @@ const MyDocuments = () => {
                 onAnalyze={handleAnalyzeEditDocument}
               />
             </div>
-            <DialogFooter>
+            <DialogFooter className="flex gap-2">
               <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
                 Cancel
               </Button>
+              <SaveButton 
+                onSave={handleSaveEditDraft}
+                isLoading={isSaving}
+                disabled={!formData.title}
+              />
               <Button onClick={handleEditDocument}>Update Document</Button>
             </DialogFooter>
           </DialogContent>
