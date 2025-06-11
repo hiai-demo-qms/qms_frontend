@@ -1,6 +1,7 @@
 
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useBookmarks } from "@/hooks/useBookmarks";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import DocumentCard from "@/components/DocumentCard";
@@ -11,12 +12,24 @@ import { Button } from "@/components/ui/button";
 
 const Dashboard = () => {
   const { user } = useAuth();
+  const { bookmarks } = useBookmarks();
   const [selectedCategory, setSelectedCategory] = useState("All Documents");
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedStandard, setSelectedStandard] = useState("ISO 9001:2015");
 
   // Filter documents based on selected category, search term, and standard
   const filteredDocuments = documents.filter((doc) => {
+    // Handle bookmarked documents category
+    if (selectedCategory === "Bookmarked Documents") {
+      return bookmarks.includes(doc.id) && 
+             doc.standard === selectedStandard &&
+             (searchTerm === "" || 
+              doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              doc.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              doc.standard.toLowerCase().includes(searchTerm.toLowerCase()) ||
+              doc.authorName.toLowerCase().includes(searchTerm.toLowerCase()));
+    }
+    
     const matchesCategory = selectedCategory === "All Documents" || doc.category === selectedCategory;
     const matchesSearch = 
       doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -27,6 +40,13 @@ const Dashboard = () => {
     
     return matchesCategory && (searchTerm === "" || matchesSearch) && matchesStandard;
   });
+
+  const getDisplayTitle = () => {
+    if (selectedCategory === "Bookmarked Documents") {
+      return "Bookmarked Documents";
+    }
+    return selectedCategory === "All Documents" ? "All Documents" : selectedCategory;
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
@@ -47,7 +67,10 @@ const Dashboard = () => {
               Welcome, {user?.name || "User"}
             </h1>
             <p className="text-gray-500">
-              Browse all documents shared by the community
+              {selectedCategory === "Bookmarked Documents" 
+                ? "Your bookmarked documents"
+                : "Browse all documents shared by the community"
+              }
             </p>
           </div>
           
@@ -82,7 +105,12 @@ const Dashboard = () => {
               ))
             ) : (
               <div className="col-span-full text-center py-10">
-                <p className="text-gray-500">No documents found</p>
+                <p className="text-gray-500">
+                  {selectedCategory === "Bookmarked Documents" 
+                    ? "No bookmarked documents found"
+                    : "No documents found"
+                  }
+                </p>
               </div>
             )}
           </div>

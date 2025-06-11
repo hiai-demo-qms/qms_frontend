@@ -3,7 +3,8 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
-import { FileText, User, Info } from "lucide-react";
+import { FileText, User, Info, Bookmark } from "lucide-react";
+import { useBookmarks } from "@/hooks/useBookmarks";
 import type { Document } from "@/data/documents";
 
 interface DocumentCardProps {
@@ -11,12 +12,19 @@ interface DocumentCardProps {
 }
 
 const DocumentCard = ({ document }: DocumentCardProps) => {
+  const { isBookmarked, toggleBookmark } = useBookmarks();
+  
   const handleViewDocument = () => {
     if (document.filePath) {
       window.open(document.filePath, '_blank');
     } else {
       window.location.href = `/document/${document.id}`;
     }
+  };
+
+  const handleBookmarkToggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    toggleBookmark(document.id);
   };
 
   return (
@@ -36,10 +44,20 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
               </CardDescription>
             </div>
           </div>
-          <div className="flex-shrink-0">
+          <div className="flex flex-col items-end gap-2 flex-shrink-0">
             <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-qms-blue/10 text-qms-blue border border-qms-blue/20">
               {document.standard}
             </span>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleBookmarkToggle}
+              className={`h-8 w-8 p-0 hover:bg-yellow-50 ${isBookmarked(document.id) ? 'text-yellow-600' : 'text-gray-400'}`}
+            >
+              <Bookmark 
+                className={`h-4 w-4 ${isBookmarked(document.id) ? 'fill-current' : ''}`} 
+              />
+            </Button>
           </div>
         </div>
       </CardHeader>
