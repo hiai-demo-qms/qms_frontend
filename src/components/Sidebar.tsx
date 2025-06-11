@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { categories } from "@/data/documents";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { FileText, ClipboardCheck } from "lucide-react";
+import { FileText, ClipboardCheck, Bookmark } from "lucide-react";
 
 interface SidebarProps {
   selectedCategory: string;
@@ -22,6 +22,20 @@ const Sidebar = ({ selectedCategory, onCategoryChange }: SidebarProps) => {
               ISO 9001:2015
             </h2>
             <div className="space-y-1">
+              {/* Bookmarked Documents */}
+              <Button
+                variant={selectedCategory === "Bookmarked Documents" ? "secondary" : "ghost"}
+                className={cn(
+                  "w-full justify-start",
+                  selectedCategory === "Bookmarked Documents" && "bg-qms-gray font-medium"
+                )}
+                onClick={() => onCategoryChange("Bookmarked Documents")}
+              >
+                <Bookmark className="mr-2 h-4 w-4" />
+                Bookmarked Documents
+              </Button>
+              
+              {/* Regular categories */}
               {categories.map((category) => (
                 <Button
                   key={category}
