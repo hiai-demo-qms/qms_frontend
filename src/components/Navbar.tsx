@@ -25,7 +25,7 @@ const Navbar = () => {
               className="hidden md:inline-flex"
               onClick={() => navigate('/dashboard')}
             >
-              All Documents
+              Tất cả tài liệu
             </Button>
             {!isAdmin && (
               <Button 
@@ -33,7 +33,7 @@ const Navbar = () => {
                 className="hidden md:inline-flex"
                 onClick={() => navigate('/my-documents')}
               >
-                My Documents
+                Tài liệu của tôi
               </Button>
             )}
             {isAdmin && (
@@ -42,7 +42,7 @@ const Navbar = () => {
                 className="hidden md:inline-flex"
                 onClick={() => navigate('/admin')}
               >
-                Admin
+                Quản trị
               </Button>
             )}
             <Button
@@ -51,17 +51,17 @@ const Navbar = () => {
               onClick={() => navigate('/profile')}
             >
               <User className="h-4 w-4 mr-2" />
-              Profile
+              Hồ sơ
             </Button>
             <div className="hidden md:flex items-center text-sm text-gray-600 mr-2">
-              Welcome, {user?.name}
+              Chào mừng, {user?.name}
             </div>
             <Button
               onClick={logout}
               variant="ghost"
               className="text-qms-darkGray hover:text-qms-blue"
             >
-              Logout
+              Đăng xuất
             </Button>
           </>
         ) : (
@@ -71,13 +71,13 @@ const Navbar = () => {
               variant="outline"
               className="text-qms-blue border-qms-blue hover:bg-qms-blue hover:text-white"
             >
-              Login
+              Đăng nhập
             </Button>
             <Button
               onClick={() => navigate('/register')}
               className="bg-qms-blue hover:bg-qms-lightBlue text-white"
             >
-              Register
+              Đăng ký
             </Button>
           </>
         )}

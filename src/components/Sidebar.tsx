@@ -32,7 +32,7 @@ const Sidebar = ({ selectedCategory, onCategoryChange }: SidebarProps) => {
                 onClick={() => onCategoryChange("Bookmarked Documents")}
               >
                 <Bookmark className="mr-2 h-4 w-4" />
-                Bookmarked Documents
+                Tài liệu đã lưu
               </Button>
               
               {/* Regular categories */}

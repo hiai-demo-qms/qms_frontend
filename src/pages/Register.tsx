@@ -21,7 +21,7 @@ const Register = () => {
     e.preventDefault();
     
     if (password !== confirmPassword) {
-      setPasswordError("Passwords do not match");
+      setPasswordError("Mật khẩu không khớp");
       return;
     }
     
@@ -37,18 +37,18 @@ const Register = () => {
       <div className="flex-grow flex items-center justify-center px-4 py-12">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle className="text-2xl text-center">Create Account</CardTitle>
+            <CardTitle className="text-2xl text-center">Tạo tài khoản</CardTitle>
             <CardDescription className="text-center">
-              Enter your details to create a new account
+              Nhập thông tin chi tiết để tạo tài khoản mới
             </CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
+                <Label htmlFor="name">Họ và tên</Label>
                 <Input
                   id="name"
-                  placeholder="John Doe"
+                  placeholder="Nguyễn Văn A"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
@@ -66,7 +66,7 @@ const Register = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">Mật khẩu</Label>
                 <Input
                   id="password"
                   type="password"
@@ -76,7 +76,7 @@ const Register = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
+                <Label htmlFor="confirmPassword">Xác nhận mật khẩu</Label>
                 <Input
                   id="confirmPassword"
                   type="password"
@@ -95,12 +95,12 @@ const Register = () => {
                 className="w-full bg-qms-blue hover:bg-qms-lightBlue"
                 disabled={isLoading}
               >
-                {isLoading ? "Creating Account..." : "Create Account"}
+                {isLoading ? "Đang tạo tài khoản..." : "Tạo tài khoản"}
               </Button>
               <div className="text-center text-sm">
-                Already have an account?{" "}
+                Đã có tài khoản?{" "}
                 <Link to="/login" className="text-qms-blue hover:underline">
-                  Sign In
+                  Đăng nhập
                 </Link>
               </div>
             </CardFooter>

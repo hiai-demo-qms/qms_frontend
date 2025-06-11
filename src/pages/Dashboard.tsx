@@ -43,9 +43,9 @@ const Dashboard = () => {
 
   const getDisplayTitle = () => {
     if (selectedCategory === "Bookmarked Documents") {
-      return "Bookmarked Documents";
+      return "Tài liệu đã lưu";
     }
-    return selectedCategory === "All Documents" ? "All Documents" : selectedCategory;
+    return selectedCategory === "All Documents" ? "Tất cả tài liệu" : selectedCategory;
   };
 
   return (
@@ -64,12 +64,12 @@ const Dashboard = () => {
         <div className="flex-grow p-6">
           <div className="mb-6">
             <h1 className="text-2xl font-bold mb-2">
-              Welcome, {user?.name || "User"}
+              Chào mừng, {user?.name || "Người dùng"}
             </h1>
             <p className="text-gray-500">
               {selectedCategory === "Bookmarked Documents" 
-                ? "Your bookmarked documents"
-                : "Browse all documents shared by the community"
+                ? "Tài liệu bạn đã lưu"
+                : "Duyệt tất cả tài liệu được chia sẻ bởi cộng đồng"
               }
             </p>
           </div>
@@ -77,7 +77,7 @@ const Dashboard = () => {
           {/* Search */}
           <div className="mb-6 flex items-center gap-2">
             <Input
-              placeholder="Search documents, authors..."
+              placeholder="Tìm kiếm tài liệu, tác giả..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="max-w-md"
@@ -87,13 +87,13 @@ const Dashboard = () => {
               onClick={() => setSearchTerm("")}
               className="hidden sm:inline-flex"
             >
-              Clear
+              Xóa
             </Button>
             <Button 
               className="bg-qms-blue hover:bg-qms-lightBlue text-white md:hidden"
               onClick={() => setSelectedCategory("All Documents")}
             >
-              All Documents
+              Tất cả tài liệu
             </Button>
           </div>
           
@@ -107,8 +107,8 @@ const Dashboard = () => {
               <div className="col-span-full text-center py-10">
                 <p className="text-gray-500">
                   {selectedCategory === "Bookmarked Documents" 
-                    ? "No bookmarked documents found"
-                    : "No documents found"
+                    ? "Không tìm thấy tài liệu đã lưu"
+                    : "Không tìm thấy tài liệu"
                   }
                 </p>
               </div>

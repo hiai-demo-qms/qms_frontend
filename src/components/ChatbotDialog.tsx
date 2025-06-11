@@ -20,7 +20,7 @@ const ChatbotDialog = ({ isOpen, onClose }: ChatbotDialogProps) => {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       type: "bot",
-      text: "Hello! I'm your QMS Assistant. How can I help you with your ISO documentation today?",
+      text: "Xin chào! Tôi là Trợ lý QMS của bạn. Tôi có thể giúp gì cho bạn về tài liệu ISO hôm nay?",
     },
   ]);
   const [input, setInput] = useState("");
@@ -42,11 +42,11 @@ const ChatbotDialog = ({ isOpen, onClose }: ChatbotDialogProps) => {
     // Simulate bot response
     setTimeout(() => {
       const botResponses = [
-        "I can help you find ISO documentation related to that topic.",
-        "Let me check our database for relevant documents.",
-        "That's a good question about quality management systems!",
-        "According to ISO standards, this is an important compliance area.",
-        "I can guide you through our documentation process for that.",
+        "Tôi có thể giúp bạn tìm tài liệu ISO liên quan đến chủ đề đó.",
+        "Để tôi kiểm tra cơ sở dữ liệu của chúng ta để tìm tài liệu có liên quan.",
+        "Đó là một câu hỏi hay về hệ thống quản lý chất lượng!",
+        "Theo tiêu chuẩn ISO, đây là một lĩnh vực tuân thủ quan trọng.",
+        "Tôi có thể hướng dẫn bạn qua quy trình tài liệu của chúng ta cho vấn đề đó.",
       ];
       
       const randomResponse = botResponses[Math.floor(Math.random() * botResponses.length)];
@@ -70,7 +70,7 @@ const ChatbotDialog = ({ isOpen, onClose }: ChatbotDialogProps) => {
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="sm:max-w-md md:max-w-lg h-[600px] flex flex-col">
         <DialogHeader>
-          <DialogTitle>QMS Assistant</DialogTitle>
+          <DialogTitle>Trợ lý QMS</DialogTitle>
         </DialogHeader>
         <ScrollArea className="flex-grow p-4 my-2">
           <div className="space-y-4">
@@ -106,7 +106,7 @@ const ChatbotDialog = ({ isOpen, onClose }: ChatbotDialogProps) => {
         <DialogFooter className="flex-shrink-0 flex gap-2">
           <div className="flex-grow">
             <Input
-              placeholder="Type your message..."
+              placeholder="Nhập tin nhắn của bạn..."
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyPress}
@@ -119,7 +119,7 @@ const ChatbotDialog = ({ isOpen, onClose }: ChatbotDialogProps) => {
             className="bg-qms-blue hover:bg-qms-lightBlue"
             disabled={isLoading}
           >
-            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Send"}
+            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : "Gửi"}
           </Button>
         </DialogFooter>
       </DialogContent>

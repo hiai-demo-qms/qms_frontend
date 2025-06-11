@@ -15,7 +15,7 @@ const SaveButton = ({
   isLoading = false, 
   disabled = false, 
   variant = "outline",
-  children = "Save Draft"
+  children = "Lưu bản nháp"
 }: SaveButtonProps) => {
   return (
     <Button

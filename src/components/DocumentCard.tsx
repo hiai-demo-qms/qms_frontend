@@ -66,12 +66,12 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <User className="h-4 w-4 flex-shrink-0" />
-            <span className="truncate">By {document.authorName}</span>
+            <span className="truncate">Bởi {document.authorName}</span>
           </div>
           
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center gap-1">
-              <span className="text-gray-500">Category:</span>
+              <span className="text-gray-500">Danh mục:</span>
               <span className="font-medium text-gray-700 truncate">{document.category}</span>
             </div>
             <div className="flex items-center gap-1 flex-shrink-0">
@@ -85,7 +85,7 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
       <CardFooter className="pt-3 flex-shrink-0 border-t border-gray-100">
         <div className="w-full space-y-3">
           <div className="text-xs text-gray-500">
-            Last updated: {document.lastUpdated}
+            Cập nhật lần cuối: {document.lastUpdated}
           </div>
           
           <div className="flex gap-2">
@@ -93,48 +93,48 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
               <PopoverTrigger asChild>
                 <Button variant="outline" size="sm" className="flex-1 text-xs h-8">
                   <Info className="mr-1.5 h-3.5 w-3.5" />
-                  Info
+                  Thông tin
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-80" align="start">
                 <div className="space-y-4">
                   <div>
-                    <h3 className="text-base font-semibold text-gray-900 mb-3">Document Information</h3>
+                    <h3 className="text-base font-semibold text-gray-900 mb-3">Thông tin tài liệu</h3>
                   </div>
                   
                   <div className="space-y-2.5 text-sm">
                     <div className="flex justify-between items-center py-1">
-                      <span className="font-medium text-gray-600">Document ID:</span>
+                      <span className="font-medium text-gray-600">ID tài liệu:</span>
                       <span className="text-gray-900 font-mono text-xs">{document.id}</span>
                     </div>
                     <div className="flex justify-between items-start py-1">
-                      <span className="font-medium text-gray-600">Title:</span>
+                      <span className="font-medium text-gray-600">Tiêu đề:</span>
                       <span className="text-right max-w-48 text-gray-900 break-words">{document.title}</span>
                     </div>
                     <div className="flex justify-between items-center py-1">
-                      <span className="font-medium text-gray-600">Category:</span>
+                      <span className="font-medium text-gray-600">Danh mục:</span>
                       <span className="text-gray-900">{document.category}</span>
                     </div>
                     <div className="flex justify-between items-center py-1">
-                      <span className="font-medium text-gray-600">Standard:</span>
+                      <span className="font-medium text-gray-600">Tiêu chuẩn:</span>
                       <span className="text-gray-900">{document.standard}</span>
                     </div>
                     <div className="flex justify-between items-center py-1">
-                      <span className="font-medium text-gray-600">Version:</span>
+                      <span className="font-medium text-gray-600">Phiên bản:</span>
                       <span className="text-gray-900">{document.version}</span>
                     </div>
                     <div className="flex justify-between items-center py-1">
-                      <span className="font-medium text-gray-600">Last Updated:</span>
+                      <span className="font-medium text-gray-600">Cập nhật lần cuối:</span>
                       <span className="text-gray-900">{document.lastUpdated}</span>
                     </div>
                     <div className="flex justify-between items-center py-1">
-                      <span className="font-medium text-gray-600">Author:</span>
+                      <span className="font-medium text-gray-600">Tác giả:</span>
                       <span className="text-gray-900">{document.authorName}</span>
                     </div>
                     <div className="flex justify-between items-start py-1">
-                      <span className="font-medium text-gray-600">File Path:</span>
+                      <span className="font-medium text-gray-600">Đường dẫn tập tin:</span>
                       <span className="text-right max-w-48 text-gray-900 break-all text-xs font-mono">
-                        {document.filePath || 'No file'}
+                        {document.filePath || 'Không có tập tin'}
                       </span>
                     </div>
                   </div>
@@ -142,7 +142,7 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
                   <Separator className="my-3" />
                   
                   <div>
-                    <h4 className="font-medium text-gray-900 mb-2">Description</h4>
+                    <h4 className="font-medium text-gray-900 mb-2">Mô tả</h4>
                     <p className="text-sm text-gray-600 leading-relaxed">{document.description}</p>
                   </div>
                 </div>
@@ -155,7 +155,7 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
               onClick={handleViewDocument}
               className="flex-1 text-xs h-8 bg-qms-blue hover:bg-qms-lightBlue"
             >
-              View Document
+              Xem tài liệu
             </Button>
           </div>
         </div>

@@ -27,9 +27,9 @@ const Login = () => {
       <div className="flex-grow flex items-center justify-center px-4 py-12">
         <Card className="w-full max-w-md">
           <CardHeader>
-            <CardTitle className="text-2xl text-center">Login</CardTitle>
+            <CardTitle className="text-2xl text-center">Đăng nhập</CardTitle>
             <CardDescription className="text-center">
-              Enter your credentials to access your account
+              Nhập thông tin đăng nhập để truy cập tài khoản của bạn
             </CardDescription>
           </CardHeader>
           <form onSubmit={handleSubmit}>
@@ -46,7 +46,7 @@ const Login = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">Mật khẩu</Label>
                 <Input
                   id="password"
                   type="password"
@@ -62,12 +62,12 @@ const Login = () => {
                 className="w-full bg-qms-blue hover:bg-qms-lightBlue"
                 disabled={isLoading}
               >
-                {isLoading ? "Signing in..." : "Sign In"}
+                {isLoading ? "Đang đăng nhập..." : "Đăng nhập"}
               </Button>
               <div className="text-center text-sm">
-                Don't have an account?{" "}
+                Chưa có tài khoản?{" "}
                 <Link to="/register" className="text-qms-blue hover:underline">
-                  Register
+                  Đăng ký
                 </Link>
               </div>
             </CardFooter>
