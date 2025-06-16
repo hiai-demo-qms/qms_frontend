@@ -1,44 +1,60 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useBookmarks } from "@/hooks/useBookmarks";
 import Navbar from "@/components/Navbar";
 import Sidebar from "@/components/Sidebar";
 import DocumentCard from "@/components/DocumentCard";
 import ChatbotButton from "@/components/ChatbotButton";
-import { documents, standards } from "@/data/documents";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useCategories, type Category } from "@/hooks/useCategories"; 
+import { useDocuments } from "@/hooks/useDocuments";
 
 const Dashboard = () => {
   const { user } = useAuth();
   const { bookmarks } = useBookmarks();
-  const [selectedCategory, setSelectedCategory] = useState("All Documents");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [selectedStandard, setSelectedStandard] = useState("ISO 9001:2015");
+  const { categories } = useCategories(); // Assuming this hook provides the categories
 
-  // Filter documents based on selected category, search term, and standard
+  const [selectedCategory, setSelectedCategory] = useState(categories[0]?.categoryName || "All Documents");
+    console.log("Danh mụcs:", selectedCategory);
+  const [searchTerm, setSearchTerm] = useState("");
+  const { documents, fetchDocumentsByCategory } = useDocuments();
+  const [hasFetched, setHasFetched] = useState(false);
+  // useEffect(() => {
+  //   if (!hasFetched && categories.length > 0) {
+  //     const firstCategoryId = categories[6]?.id;
+  //     console.log("First category ID:", firstCategoryId);
+  //     if (firstCategoryId) {
+  //       fetchDocumentsByCategory(firstCategoryId);
+  //       setHasFetched(true); // Đảm bảo chỉ fetch một lần
+  //     }
+  //   }
+  // }, [categories, hasFetched, fetchDocumentsByCategory]); // Assuming this hook provides the documents
+  
+  console.log("Tai lieu:", documents);
+  
   const filteredDocuments = documents.filter((doc) => {
-    // Handle bookmarked documents category
-    if (selectedCategory === "Bookmarked Documents") {
-      return bookmarks.includes(doc.id) && 
-             doc.standard === selectedStandard &&
-             (searchTerm === "" || 
-              doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              doc.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              doc.standard.toLowerCase().includes(searchTerm.toLowerCase()) ||
-              doc.authorName.toLowerCase().includes(searchTerm.toLowerCase()));
-    }
-    
-    const matchesCategory = selectedCategory === "All Documents" || doc.category === selectedCategory;
-    const matchesSearch = 
+    const matchesSearch =
       doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       doc.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      doc.standard.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      doc.authorName.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStandard = doc.standard === selectedStandard;
-    
-    return matchesCategory && (searchTerm === "" || matchesSearch) && matchesStandard;
+      doc.user.fullName.toLowerCase().includes(searchTerm.toLowerCase());
+
+    // Nếu đang chọn "Tài liệu đã lưu"
+    if (selectedCategory === "Bookmarked Documents") {
+      return bookmarks.includes(doc.id) && (searchTerm === "" || matchesSearch);
+    }
+
+    // Nếu đang chọn "Tất cả tài liệu"
+    if (selectedCategory === "All Documents") {
+      return searchTerm === "" || matchesSearch;
+    }
+
+    // Lọc theo danh mục cụ thể
+    return (
+      doc.category.categoryName === selectedCategory &&
+      (searchTerm === "" || matchesSearch)
+    );
   });
 
   const getDisplayTitle = () => {
@@ -64,7 +80,7 @@ const Dashboard = () => {
         <div className="flex-grow p-6">
           <div className="mb-6">
             <h1 className="text-2xl font-bold mb-2">
-              Chào mừng, {user?.name || "Người dùng"}
+              Chào mừng, {user?.fullname || "Người dùng"}
             </h1>
             <p className="text-gray-500">
               {selectedCategory === "Bookmarked Documents" 

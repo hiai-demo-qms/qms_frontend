@@ -166,4 +166,4 @@ export const categories = [
   "Security",
 ];
 
-export const standards = ["ISO 9001:2015", "ISO 14001:2015", "ISO 27001:2013"];
+export const standards = ["ISO 9001:2015"];

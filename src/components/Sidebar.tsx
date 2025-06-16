@@ -1,10 +1,11 @@
 
 import { useState } from "react";
+// import { categories } from "@/data/documents";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { categories } from "@/data/documents";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { FileText, ClipboardCheck, Bookmark } from "lucide-react";
+import { useCategories } from "@/hooks/useCategories";
 
 interface SidebarProps {
   selectedCategory: string;
@@ -12,6 +13,8 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ selectedCategory, onCategoryChange }: SidebarProps) => {
+  const { categories } = useCategories();
+
   return (
     <div className="w-64 h-full border-r bg-white">
       <ScrollArea className="h-full p-4">
@@ -34,20 +37,30 @@ const Sidebar = ({ selectedCategory, onCategoryChange }: SidebarProps) => {
                 <Bookmark className="mr-2 h-4 w-4" />
                 Tài liệu đã lưu
               </Button>
-              
+              <Button
+                variant={selectedCategory === "All Documents" ? "secondary" : "ghost"}
+                className={cn(
+                  "w-full justify-start",
+                  selectedCategory === "All Documents" && "bg-qms-gray font-medium"
+                )}
+                onClick={() => onCategoryChange("All Documents")}
+              >
+                <FileText className="mr-2 h-4 w-4" />
+                Tất cả tài liệu
+              </Button>
               {/* Regular categories */}
               {categories.map((category) => (
                 <Button
-                  key={category}
-                  variant={category === selectedCategory ? "secondary" : "ghost"}
+                  key={category.categoryName}
+                  variant={category.categoryName === selectedCategory ? "secondary" : "ghost"}
                   className={cn(
                     "w-full justify-start",
-                    category === selectedCategory && "bg-qms-gray font-medium"
+                    category.categoryName === selectedCategory && "bg-qms-gray font-medium"
                   )}
-                  onClick={() => onCategoryChange(category)}
+                  onClick={() => onCategoryChange(category.categoryName)}
                 >
                   <FileText className="mr-2 h-4 w-4" />
-                  {category}
+                  {category.categoryName}
                 </Button>
               ))}
             </div>

@@ -159,7 +159,7 @@ const DocumentView = () => {
                 <table className="w-full mb-4 border-collapse">
                   <tbody>
                     <tr className="border-b">
-                      <td className="py-2 font-medium">Document ID:</td>
+                      <td className="py-2 font-medium">Mã tài liệu:</td>
                       <td className="py-2">{document.id}</td>
                     </tr>
                     <tr className="border-b">

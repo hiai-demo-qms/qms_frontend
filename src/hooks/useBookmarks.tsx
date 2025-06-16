@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 
 export const useBookmarks = () => {
-  const [bookmarks, setBookmarks] = useState<string[]>([]);
+  const [bookmarks, setBookmarks] = useState<number[]>([]);
 
   useEffect(() => {
     const savedBookmarks = localStorage.getItem('bookmarkedDocuments');
@@ -11,7 +11,7 @@ export const useBookmarks = () => {
     }
   }, []);
 
-  const toggleBookmark = (documentId: string) => {
+  const toggleBookmark = (documentId: number) => {
     const updatedBookmarks = bookmarks.includes(documentId)
       ? bookmarks.filter(id => id !== documentId)
       : [...bookmarks, documentId];
@@ -20,7 +20,7 @@ export const useBookmarks = () => {
     localStorage.setItem('bookmarkedDocuments', JSON.stringify(updatedBookmarks));
   };
 
-  const isBookmarked = (documentId: string) => {
+  const isBookmarked = (documentId: number) => {
     return bookmarks.includes(documentId);
   };
 

@@ -9,7 +9,7 @@ import Navbar from "@/components/Navbar";
 import { useAuth } from "@/hooks/useAuth";
 
 const Register = () => {
-  const [name, setName] = useState("");
+  const [fullname, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -27,7 +27,7 @@ const Register = () => {
     
     setPasswordError("");
     setIsLoading(true);
-    await register(name, email, password);
+    await register(fullname, email, password);
     setIsLoading(false);
   };
 
@@ -50,8 +50,8 @@ const Register = () => {
                   id="name"
                   placeholder="Nguyễn Văn A"
                   required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  value={fullname}
+                  onChange={(e) => setFullName(e.target.value)}
                 />
               </div>
               <div className="space-y-2">

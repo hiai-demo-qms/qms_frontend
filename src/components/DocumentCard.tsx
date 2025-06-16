@@ -5,26 +5,37 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Separator } from "@/components/ui/separator";
 import { FileText, User, Info, Bookmark } from "lucide-react";
 import { useBookmarks } from "@/hooks/useBookmarks";
-import type { Document } from "@/data/documents";
+import type { Document } from "@/hooks/useDocuments";
+import dayjs from "dayjs";
 
 interface DocumentCardProps {
   document: Document;
 }
-
+const accessToken = localStorage.getItem("accessToken"); // Lấy access token từ localStorage nếu cần
 const DocumentCard = ({ document }: DocumentCardProps) => {
   const { isBookmarked, toggleBookmark } = useBookmarks();
   
-  const handleViewDocument = () => {
-    if (document.filePath) {
-      window.open(document.filePath, '_blank');
-    } else {
-      window.location.href = `/document/${document.id}`;
+  const handleViewDocument = async () => {
+    try {
+      const res = await fetch(`https://localhost:7147/api/document/${document.id}/download`);
+
+      const data = await res.json();
+
+      if (res.ok && data.response) {
+        window.open(data.response, '_blank');
+      } else {
+        alert(data.message || "Không thể mở tài liệu.");
+      }
+    } catch (error) {
+      console.error("Lỗi khi mở tài liệu:", error);
+      alert("Có lỗi xảy ra khi mở tài liệu.");
     }
   };
 
   const handleBookmarkToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
     toggleBookmark(document.id);
+    console.log("Bookmark: ", localStorage.getItem('bookmarkedDocuments'));
   };
 
   return (
@@ -39,15 +50,12 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
               <CardTitle className="text-lg font-semibold text-gray-900 line-clamp-2 leading-tight mb-2">
                 {document.title}
               </CardTitle>
-              <CardDescription className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
+              {/* <CardDescription className="text-sm text-gray-600 line-clamp-2 leading-relaxed">
                 {document.description}
-              </CardDescription>
+              </CardDescription> */}
             </div>
           </div>
           <div className="flex flex-col items-end gap-2 flex-shrink-0">
-            <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-qms-blue/10 text-qms-blue border border-qms-blue/20">
-              {document.standard}
-            </span>
             <Button
               variant="ghost"
               size="sm"
@@ -66,13 +74,13 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-sm text-gray-600">
             <User className="h-4 w-4 flex-shrink-0" />
-            <span className="truncate">Bởi {document.authorName}</span>
+            <span className="truncate">{document.user.fullName}</span>
           </div>
           
           <div className="flex items-center justify-between text-sm">
             <div className="flex items-center gap-1">
               <span className="text-gray-500">Danh mục:</span>
-              <span className="font-medium text-gray-700 truncate">{document.category}</span>
+              <span className="font-medium text-gray-700 truncate">{document.category.categoryName}</span>
             </div>
             <div className="flex items-center gap-1 flex-shrink-0">
               <span className="text-gray-500">v</span>
@@ -85,7 +93,7 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
       <CardFooter className="pt-3 flex-shrink-0 border-t border-gray-100">
         <div className="w-full space-y-3">
           <div className="text-xs text-gray-500">
-            Cập nhật lần cuối: {document.lastUpdated}
+            Cập nhật lần cuối: {dayjs(document.updatedAt).format("DD/MM/YYYY HH:mm")}
           </div>
           
           <div className="flex gap-2">
@@ -104,8 +112,8 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
                   
                   <div className="space-y-2.5 text-sm">
                     <div className="flex justify-between items-center py-1">
-                      <span className="font-medium text-gray-600">ID tài liệu:</span>
-                      <span className="text-gray-900 font-mono text-xs">{document.id}</span>
+                      <span className="font-medium text-gray-600">Mã tài liệu:</span>
+                      <span className="text-gray-900 font-mono text-xs">{document.code}</span>
                     </div>
                     <div className="flex justify-between items-start py-1">
                       <span className="font-medium text-gray-600">Tiêu đề:</span>
@@ -113,11 +121,7 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
                     </div>
                     <div className="flex justify-between items-center py-1">
                       <span className="font-medium text-gray-600">Danh mục:</span>
-                      <span className="text-gray-900">{document.category}</span>
-                    </div>
-                    <div className="flex justify-between items-center py-1">
-                      <span className="font-medium text-gray-600">Tiêu chuẩn:</span>
-                      <span className="text-gray-900">{document.standard}</span>
+                      <span className="text-gray-900">{document.category.categoryName}</span>
                     </div>
                     <div className="flex justify-between items-center py-1">
                       <span className="font-medium text-gray-600">Phiên bản:</span>
@@ -125,17 +129,11 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
                     </div>
                     <div className="flex justify-between items-center py-1">
                       <span className="font-medium text-gray-600">Cập nhật lần cuối:</span>
-                      <span className="text-gray-900">{document.lastUpdated}</span>
+                      <span className="text-gray-900">{dayjs(document.updatedAt).format("DD/MM/YYYY HH:mm")}</span>
                     </div>
                     <div className="flex justify-between items-center py-1">
-                      <span className="font-medium text-gray-600">Tác giả:</span>
-                      <span className="text-gray-900">{document.authorName}</span>
-                    </div>
-                    <div className="flex justify-between items-start py-1">
-                      <span className="font-medium text-gray-600">Đường dẫn tập tin:</span>
-                      <span className="text-right max-w-48 text-gray-900 break-all text-xs font-mono">
-                        {document.filePath || 'Không có tập tin'}
-                      </span>
+                      <span className="font-medium text-gray-600">Người đăng:</span>
+                      <span className="text-gray-900">{document.user.fullName}</span>
                     </div>
                   </div>
                   
