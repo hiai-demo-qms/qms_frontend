@@ -54,7 +54,7 @@ const Navbar = () => {
               Hồ sơ
             </Button>
             <div className="hidden md:flex items-center text-sm text-gray-600 mr-2">
-              Chào mừng, {user?.name}
+              Chào mừng, {user?.fullname}
             </div>
             <Button
               onClick={logout}

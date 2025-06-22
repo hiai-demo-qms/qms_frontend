@@ -111,6 +111,24 @@ export const useDocuments = () => {
     }
     return null; // Trả về null nếu có lỗi
   }
+    const getDocUrl = async (documentId: number) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`${API_BASE_URL}api/document/${documentId}/download`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      const data = await res.json();
+      if (res.ok && data.response) {
+        return data.response;
+      }
+    } catch (err) {
+      setError("Lỗi khi tải tài liệu.");
+    }
+    return null; // Trả về null nếu có lỗi
+  }
   const deleteDocument = async (documentId: number) => {
     setLoading(true);
     setError(null);
@@ -160,6 +178,26 @@ export const useDocuments = () => {
       console.error("Lỗi khi gọi API:", err);
       alert("Đã xảy ra lỗi khi gửi tài liệu.");
     }
+  }
+
+  const getDocument = async (documentId: number) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const res = await fetch(`${API_BASE_URL}api/document/${documentId}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      const data = await res.json();
+      if (res.ok && data.response) {
+        return data.response;
+      }
+    } catch (err) {
+      setError("Lỗi khi tải tài liệu.");
+    }
+    return null; // Trả về null nếu có lỗi
   }
 
   const updateDocument = async (documentId: number, formDataToSend: FormData) => {
@@ -246,6 +284,8 @@ export const useDocuments = () => {
     documents,
     loading,
     error,
+    getDocument,
+    getDocUrl,
     deleteDocument,
     uploadDocument,
     updateDocument,

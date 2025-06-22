@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { FileText, User, Info, Bookmark } from "lucide-react";
 import { useBookmarks } from "@/hooks/useBookmarks";
 import type { Document } from "@/hooks/useDocuments";
+import { Link, useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 
 interface DocumentCardProps {
@@ -14,7 +15,7 @@ interface DocumentCardProps {
 const accessToken = localStorage.getItem("accessToken"); // Lấy access token từ localStorage nếu cần
 const DocumentCard = ({ document }: DocumentCardProps) => {
   const { isBookmarked, toggleBookmark } = useBookmarks();
-  
+  const navigate = useNavigate();
   const handleViewDocument = async () => {
     try {
       const res = await fetch(`https://localhost:7147/api/document/${document.id}/download`);
@@ -150,7 +151,7 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
             <Button 
               variant="default" 
               size="sm" 
-              onClick={handleViewDocument}
+              onClick={() => navigate('/document/' + document.id)}
               className="flex-1 text-xs h-8 bg-qms-blue hover:bg-qms-lightBlue"
             >
               Xem tài liệu

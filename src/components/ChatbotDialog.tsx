@@ -55,8 +55,8 @@ const ChatbotDialog = ({ isOpen, onClose }: ChatbotDialogProps) => {
             {messages.map((msg, idx) => (
               <div
                 key={idx}
-                className={`flex ${
-                  msg.role === "user" ? "justify-end" : "justify-start"
+                className={`flex flex-col items-${
+                  msg.role === "user" ? "end" : "start"
                 }`}
               >
                 <div
@@ -74,8 +74,15 @@ const ChatbotDialog = ({ isOpen, onClose }: ChatbotDialogProps) => {
                       {msg.content}
                     </>
                   ) : (
-                    msg.content
+                    msg.content.split("\n").map((line, i) => (
+                      <p key={i}>{line}</p>
+                    ))
                   )}
+                </div>
+
+                {/* ⬇️ Hiển thị thời gian ở ngoài khung chat, bên dưới */}
+                <div className="text-xs text-gray-500 mt-1 px-1">
+                  {new Date(msg.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                 </div>
               </div>
             ))}

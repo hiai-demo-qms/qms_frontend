@@ -1,45 +1,80 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, Link } from "react-router-dom";
-import { useAuth } from "@/hooks/useAuth";
+import { useDocuments } from "@/hooks/useDocuments";
 import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Progress } from "@/components/ui/progress";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { documents } from "@/data/documents";
-import { ArrowLeft, FileText, Download, Printer, Share2, Info } from "lucide-react";
+import { FileText, ArrowLeft, Download, Printer, Share2 } from "lucide-react";
+import { Document, Page, pdfjs } from 'react-pdf';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
+import { ArrowUp } from "lucide-react";
+
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  'pdfjs-dist/build/pdf.worker.min.mjs',
+  import.meta.url,
+).toString();
+
+const scrollToTop = () => {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+};
 
 const DocumentView = () => {
   const { id } = useParams();
-  const { user } = useAuth();
+  const { documents, loading, getDocumentUrl, getDocUrl, getDocument } = useDocuments();
   const [document, setDocument] = useState<typeof documents[0] | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [docUrl, setDocUrl] = useState<string | null>(null);
+  const [numPages, setNumPages] = useState<number>(0);
+
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [pageWidth, setPageWidth] = useState<number | undefined>(undefined);
+
+  const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
+    setNumPages(numPages);
+  };
 
   useEffect(() => {
-    // Simulate loading the document
-    const timer = setTimeout(() => {
-      const foundDocument = documents.find(doc => doc.id === id);
-      setDocument(foundDocument || null);
-      setLoading(false);
-    }, 500);
+    const fetchDocument = async () => {
+      if (id) {
+        const doc = await getDocument(Number(id));
+        if (doc) {
+          setDocument(doc);
+        } else {
+          setDocument(null);
+        }
+      }
+    };
+    const fetchUrl = async () => {
+      const url = await getDocUrl(document.id);
+      if (url) setDocUrl(url);
+    };
+    fetchDocument();
+    if (document) {
+      fetchUrl();
+    }
+    if (containerRef.current) {
+      setPageWidth(containerRef.current.offsetWidth - 32); // trừ padding nếu có
+    }
+  }, [document]);
 
-    return () => clearTimeout(timer);
-  }, [id]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex flex-col bg-gray-50">
-        <Navbar />
-        <div className="flex-grow flex items-center justify-center">
-          <div className="text-center">
-            <Progress className="w-64 h-2 mb-4" value={75} />
-            <p className="text-gray-500">Loading document...</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
+
+  // if (loading || !documents.length) {
+  //   console.log(document);
+  //   return (
+  //     <div className="min-h-screen flex flex-col bg-gray-50">
+  //       <Navbar />
+  //       <div className="flex-grow flex items-center justify-center">
+  //         <div className="text-center">
+  //           <Progress className="w-64 h-2 mb-4" value={75} />
+  //           <p className="text-gray-500">Loading document...</p>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   if (!document) {
     return (
@@ -84,12 +119,12 @@ const DocumentView = () => {
                   <div>
                     <CardTitle className="text-2xl">{document.title}</CardTitle>
                     <p className="text-sm text-gray-500 mt-2">
-                      Category: {document.category} • Version: {document.version} • Updated: {document.lastUpdated}
+                      Category: {document.category?.categoryName} • Version: {document.version} • Updated: {document.updatedAt}
                     </p>
                   </div>
                 </div>
                 <div className="px-3 py-1 bg-qms-gray rounded-md text-sm font-medium">
-                  {document.standard}
+                  ISO 9001:2015
                 </div>
               </div>
             </CardHeader>
@@ -100,7 +135,7 @@ const DocumentView = () => {
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-lg font-semibold">Document Contents</h2>
                 <div className="flex space-x-2">
-                  <Button variant="outline" size="sm">
+                  <Button variant="outline" size="sm" onClick={() => getDocumentUrl(document.id)}>
                     <Download className="mr-2 h-4 w-4" />
                     Download
                   </Button>
@@ -114,77 +149,36 @@ const DocumentView = () => {
                   </Button>
                 </div>
               </div>
-              
+
               <Separator className="mb-6" />
-              
-              <div className="prose max-w-none">
-                <p className="mb-4">
-                  {document.description}
-                </p>
-                
-                <h3 className="text-lg font-medium mt-6 mb-3">1. Purpose and Scope</h3>
-                <p className="mb-4">
-                  This {document.title.toLowerCase()} provides guidance for implementing and maintaining 
-                  {document.category.toLowerCase() === 'quality management' 
-                    ? ' the organization\'s quality management system' 
-                    : ` the organization's ${document.category.toLowerCase()} processes`} 
-                  in compliance with ISO 9001:2015 requirements.
-                </p>
-                
-                <h3 className="text-lg font-medium mt-6 mb-3">2. Normative References</h3>
-                <p className="mb-4">
-                  ISO 9001:2015 - Quality Management Systems - Requirements
-                </p>
-                
-                <h3 className="text-lg font-medium mt-6 mb-3">3. Terms and Definitions</h3>
-                <p className="mb-4">
-                  For the purposes of this document, the terms and definitions given in ISO 9000:2015 apply.
-                </p>
-                
-                <h3 className="text-lg font-medium mt-6 mb-3">4. Document Content</h3>
-                <p className="mb-4">
-                  This is placeholder content for the {document.title}. In a real QMS system, this would contain 
-                  the actual document content, procedures, and requirements specific to {document.category}.
-                </p>
-                
-                <h3 className="text-lg font-medium mt-6 mb-3">5. Associated Records</h3>
-                <ul className="list-disc pl-5 mb-4">
-                  <li>Quality Records</li>
-                  <li>Process Documentation</li>
-                  <li>Work Instructions</li>
-                  <li>Forms and Templates</li>
-                </ul>
-                
-                <h3 className="text-lg font-medium mt-6 mb-3">6. Document Control Information</h3>
-                <table className="w-full mb-4 border-collapse">
-                  <tbody>
-                    <tr className="border-b">
-                      <td className="py-2 font-medium">Mã tài liệu:</td>
-                      <td className="py-2">{document.id}</td>
-                    </tr>
-                    <tr className="border-b">
-                      <td className="py-2 font-medium">Version:</td>
-                      <td className="py-2">{document.version}</td>
-                    </tr>
-                    <tr className="border-b">
-                      <td className="py-2 font-medium">Last Updated:</td>
-                      <td className="py-2">{document.lastUpdated}</td>
-                    </tr>
-                    <tr className="border-b">
-                      <td className="py-2 font-medium">Next Review Date:</td>
-                      <td className="py-2">
-                        {new Date(new Date(document.lastUpdated).setFullYear(new Date(document.lastUpdated).getFullYear() + 1)).toISOString().split('T')[0]}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td className="py-2 font-medium">Approved By:</td>
-                      <td className="py-2">Quality Manager</td>
-                    </tr>
-                  </tbody>
-                </table>
+
+              <div ref={containerRef} className="prose max-w-4xl mx-auto p-4 bg-white rounded-lg shadow">
+                <Document file={docUrl} onLoadSuccess={onDocumentLoadSuccess}>
+                  {Array.from({ length: numPages }, (_, i) => (
+                    <div key={i} className="my-6 flex justify-center">
+                      <Page
+                        pageNumber={i + 1}
+                        width={pageWidth}
+                        renderTextLayer={false}
+                        renderAnnotationLayer={false}
+                        className="rounded shadow"
+                      />
+                    </div>
+                  ))}
+                </Document>
               </div>
+
             </CardContent>
           </Card>
+
+          <Button
+            onClick={scrollToTop}
+            className="fixed bottom-6 right-6 z-50 p-3 bg-blue-600 text-white rounded-full shadow-lg hover:bg-blue-700 transition-all"
+            title="Về đầu trang"
+          >
+            <ArrowUp className="w-5 h-5" />
+          </Button>
+
         </div>
       </div>
     </div>
