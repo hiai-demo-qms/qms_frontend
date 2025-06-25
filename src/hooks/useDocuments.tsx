@@ -1,5 +1,5 @@
 import { useQueries } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { createContext, useContext, useState, ReactNode, useEffect } from "react";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
@@ -7,6 +7,18 @@ export interface Category {
   id: number;
   categoryName: string;
   description: string;
+}
+
+export interface AnalyzeResult {
+  analyzeResponseId: number;
+  score: number;
+  status: 'Đạt' | 'Không đạt';
+  clause_Results: Array<{
+    title: string;
+    score: number;
+    status: 'Đạt' | 'Không đạt';
+    keywords: string;
+  }>;
 }
 
 export interface Document {
@@ -31,65 +43,107 @@ export interface Document {
     };
 }
 
-export const useDocuments = () => {
+interface DocumentsContextType {
+    documents: Document[];
+    bookmarkedDocuments: Document[];
+    loading: boolean;
+    error: string | null;
+    isBookmarked: boolean;
+    setIsBookmarked: (isBookmarked: boolean) => void;
+    getDocument: (documentId: number) => Promise<Document | null>;
+    getDocUrl: (documentId: number) => Promise<string | null>;
+    analyzeDocument: (file: File) => Promise<AnalyzeResult | null>;
+    deleteDocument: (documentId: number) => Promise<void>;
+    uploadDocument: (formDataToSend: FormData) => Promise<Response>;
+    updateDocument: (documentId: number, formDataToSend: FormData) => Promise<Response>;
+    getBookmarkedDocuments: () => Promise<void>;
+    setBookmarkedDocument: (documentId: number, isBookmarked: boolean) => Promise<void>;
+    checkIsBookmarked: (documentId: number) => boolean;
+    getDocumentUrl: (documentId: number) => Promise<string | null>;
+    fetchDocuments: () => Promise<void>;
+    fetchDocumentsByUser: () => Promise<void>;
+    fetchDocumentsByCategory: (categoryId: number) => Promise<void>;
+}
+
+const DocumentsContext = createContext<DocumentsContextType | undefined>(undefined);
+
+export const DocumentsProvider = ({ children }: { children: React.ReactNode }) => {
   const [documents, setDocuments] = useState<Document[]>([]);
+  const [bookmarkedDocuments, setBookmarkedDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [isBookmarked, setIsBookmarked] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const accessToken = localStorage.getItem("accessToken");
 
   useEffect(() => {
-    const fetchDocuments = async () => {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const res = await fetch(`${API_BASE_URL}api/document`);
-
-        const data = await res.json();
-        console.log("Documents:", data);
-        if (res.ok && data.response) {
-          setDocuments(data.response);
-        } else {
-          setError(data.message || "Không thể tải tài liệu.");
-        }
-      } catch (err) {
-        setError("Lỗi khi tải tài liệu.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchDocuments();
+    // getBookmarkedDocuments();
+    // fetchDocuments();
   }, []);
 
-  // const analyzeDocument = async (file: File) => {
-  //   setLoading(true);
-  //   setError(null);
+  const fetchDocuments = async () => {
+    setLoading(true);
+    setError(null);
 
-  //   try {
-  //     const res = await fetch(`${API_BASE_URL}api/document/${documentId}/analyze`, {
-  //       method: "POST",
-  //       headers: {
-  //         Authorization: `Bearer ${accessToken}`,
-  //       },
-  //     });
+    try {
+      const res = await fetch(`${API_BASE_URL}api/document`);
 
-  //     const data = await res.json();
+      const data = await res.json();
+      console.log("Documents:", data);
+      if (res.ok && data.response) {
+        setDocuments(data.response);
+      } else {
+        setError(data.message || "Không thể tải tài liệu.");
+      }
+    } catch (err) {
+      setError("Lỗi khi tải tài liệu.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  //     if (res.ok && data.response) {
-  //       // Handle successful analysis response
-  //       console.log("Analysis result:", data.response);
-  //     } else {
-  //       setError(data.message || "Không thể phân tích tài liệu.");
-  //     }
-  //   } catch (err) {
-  //     setError("Lỗi khi phân tích tài liệu.");
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // }
+  const analyzeDocument = async (file: File) => {
+    setLoading(true);
+    setError(null);
 
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch(`${API_BASE_URL}api/chatbot/analyze`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        body: formData,
+      });
+
+      console.log("Analyze response:", res);
+
+      const data = await res.json();
+
+      if (res.ok) {
+        if (!data) {
+          console.error("Phân tích thất bại: Không có data trong response");
+          return;
+        }
+        if (!data.analyzeResponseId) {
+          console.error("Phân tích thất bại: Không có analyzeResponseId trong response");
+          return;
+        }
+        console.log("Analysis result:", data);
+        return data; // Trả về kết quả phân tích
+        // setAnalysisResult(data); // nếu bạn muốn lưu kết quả
+      } else {
+        setError(data.message || "Không thể phân tích tài liệu.");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Lỗi khi phân tích tài liệu.");
+    } finally {
+      setLoading(false);
+    }
+  }
   const getDocumentUrl = async (documentId: number) => {
     setLoading(true);
     setError(null);
@@ -111,7 +165,7 @@ export const useDocuments = () => {
     }
     return null; // Trả về null nếu có lỗi
   }
-    const getDocUrl = async (documentId: number) => {
+  const getDocUrl = async (documentId: number) => {
     setLoading(true);
     setError(null);
     try {
@@ -156,6 +210,7 @@ export const useDocuments = () => {
 
   const uploadDocument = async (formDataToSend: FormData) => {
     try {
+      console.log("Uploading document with formData:", formDataToSend);
       const res = await fetch(`${API_BASE_URL}api/document`, {
         method: "POST",
         body: formDataToSend,
@@ -179,6 +234,66 @@ export const useDocuments = () => {
       alert("Đã xảy ra lỗi khi gửi tài liệu.");
     }
   }
+
+  const getBookmarkedDocuments = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`${API_BASE_URL}api/document/bookmarked`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+
+      const data = await res.json();
+      console.log("Bookmarked documents:", data);
+
+      if (res.ok && data.response) {
+        setBookmarkedDocuments(data.response);
+      } else {
+        setError(data.message || "Không thể tải tài liệu đã lưu.");
+      }
+    } catch (err) {
+      setError("Lỗi khi tải tài liệu đã lưu.");
+    } finally {
+      setLoading(false);
+    }
+    return null; // Trả về null nếu có lỗi
+  }
+
+  const setBookmarkedDocument = async (documentId: number, isBookmarked: boolean) => {
+    setLoading(true);
+    setError(null);
+    try {
+      console.log("Setting bookmark for document ID:", documentId, "Is bookmarked:", isBookmarked);
+      const res = await fetch(`${API_BASE_URL}api/document/bookmark/${documentId}`, {
+        method: isBookmarked ? "DELETE" : "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },  
+      });
+      const data = await res.json();
+      if (res.ok) {
+        // if (isBookmarked) {
+        //   setBookmarkedDocuments((prev) => prev.filter((doc) => doc.id !== documentId));
+        // } else {
+        //   setBookmarkedDocuments((prev) => [...prev, data.response]);
+        // }
+        await getBookmarkedDocuments(); // Cập nhật lại danh sách tài liệu đã lưu
+      } else {
+        setError(data.message || "Không thể cập nhật tài liệu đã lưu.");
+      }
+    } catch (err) {
+      setError("Lỗi khi cập nhật tài liệu đã lưu.");
+    }
+    finally {
+      setLoading(false);
+    }
+  }
+
+  const checkIsBookmarked = (documentId: number) => {
+    return bookmarkedDocuments.some((doc) => doc.id === documentId);
+  };
 
   const getDocument = async (documentId: number) => {
     setLoading(true);
@@ -280,17 +395,39 @@ export const useDocuments = () => {
     }
   };
 
-  return {
+  const contextValue: DocumentsContextType = {
     documents,
+    bookmarkedDocuments,
     loading,
     error,
+    isBookmarked,
+    setIsBookmarked,
     getDocument,
     getDocUrl,
+    analyzeDocument,
     deleteDocument,
     uploadDocument,
     updateDocument,
+    getBookmarkedDocuments,
+    setBookmarkedDocument,
+    checkIsBookmarked,
     getDocumentUrl,
+    fetchDocuments,
     fetchDocumentsByUser,
     fetchDocumentsByCategory,
   };
+
+  return (
+    <DocumentsContext.Provider value={contextValue}>
+      {children}
+    </DocumentsContext.Provider>
+  );
+};
+
+export const useDocuments = () => {
+  const context = useContext(DocumentsContext);
+  if (!context) {
+    throw new Error("useDocuments must be used within a DocumentsProvider");
+  }
+  return context;
 };

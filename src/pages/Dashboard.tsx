@@ -10,53 +10,70 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useCategories, type Category } from "@/hooks/useCategories"; 
 import { useDocuments } from "@/hooks/useDocuments";
+import type { Document } from "@/hooks/useDocuments";
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const { bookmarks } = useBookmarks();
   const { categories } = useCategories(); // Assuming this hook provides the categories
-
   const [selectedCategory, setSelectedCategory] = useState(categories[0]?.categoryName || "All Documents");
-    console.log("Danh mụcs:", selectedCategory);
   const [searchTerm, setSearchTerm] = useState("");
-  const { documents, fetchDocumentsByCategory } = useDocuments();
-  const [hasFetched, setHasFetched] = useState(false);
-  // useEffect(() => {
-  //   if (!hasFetched && categories.length > 0) {
-  //     const firstCategoryId = categories[6]?.id;
-  //     console.log("First category ID:", firstCategoryId);
-  //     if (firstCategoryId) {
-  //       fetchDocumentsByCategory(firstCategoryId);
-  //       setHasFetched(true); // Đảm bảo chỉ fetch một lần
-  //     }
-  //   }
-  // }, [categories, hasFetched, fetchDocumentsByCategory]); // Assuming this hook provides the documents
-  
-  console.log("Tai lieu:", documents);
-  
-  const filteredDocuments = documents.filter((doc) => {
-    const matchesSearch =
-      doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      doc.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      doc.user.fullName.toLowerCase().includes(searchTerm.toLowerCase());
+  const { documents, bookmarkedDocuments, getBookmarkedDocuments, setBookmarkedDocument, fetchDocuments } = useDocuments();
 
-    // Nếu đang chọn "Tài liệu đã lưu"
-    if (selectedCategory === "Bookmarked Documents") {
-      return bookmarks.includes(doc.id) && (searchTerm === "" || matchesSearch);
-    }
+  console.log("Bookmarked Documents:", bookmarkedDocuments);
+  const [filteredDocuments, setFilteredDocuments] = useState<Document[]>([]);
+  useEffect(() => {
+    getBookmarkedDocuments();
+    fetchDocuments();
+  }, []);
 
-    // Nếu đang chọn "Tất cả tài liệu"
-    if (selectedCategory === "All Documents") {
-      return searchTerm === "" || matchesSearch;
-    }
+  useEffect(() => {
+    const lowerSearch = searchTerm.toLowerCase();
+    let docsToFilter = selectedCategory === "Bookmarked Documents" 
+      ? bookmarkedDocuments
+      : selectedCategory === "All Documents"
+        ? documents
+        : documents.filter(doc => doc.category.categoryName === selectedCategory);
 
-    // Lọc theo danh mục cụ thể
-    return (
-      doc.category.categoryName === selectedCategory &&
-      (searchTerm === "" || matchesSearch)
+    const filtered = docsToFilter.filter(doc =>
+      doc.title.toLowerCase().includes(lowerSearch) ||
+      doc.description.toLowerCase().includes(lowerSearch) ||
+      doc.user.fullName.toLowerCase().includes(lowerSearch)
     );
-  });
 
+    setFilteredDocuments(filtered);
+  }, [searchTerm, selectedCategory, bookmarkedDocuments, documents]);
+
+  // const filteredDocuments = selectedCategory === "Bookmarked Documents"
+  //   ? bookmarkedDocuments.filter((doc) => {
+  //       const matchesSearch =
+  //         doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //         doc.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //         doc.user.fullName.toLowerCase().includes(searchTerm.toLowerCase());
+
+  //       return searchTerm === "" || matchesSearch;
+  //     })
+  //   : documents.filter((doc) => {
+  //       const matchesSearch =
+  //         doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //         doc.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //         doc.user.fullName.toLowerCase().includes(searchTerm.toLowerCase());
+
+  //       // Nếu đang chọn "Tất cả tài liệu"
+  //       if (selectedCategory === "All Documents") {
+  //         return searchTerm === "" || matchesSearch;
+  //       }
+
+  //       // Lọc theo danh mục cụ thể
+  //       return (
+  //         doc.category.categoryName === selectedCategory &&
+  //         (searchTerm === "" || matchesSearch)
+  //       );
+  //     });
+
+
+  const handleBookmarkChange = async () => {
+    await getBookmarkedDocuments(); // Gọi lại API để cập nhật danh sách
+  };
   const getDisplayTitle = () => {
     if (selectedCategory === "Bookmarked Documents") {
       return "Tài liệu đã lưu";
@@ -117,7 +134,7 @@ const Dashboard = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredDocuments.length > 0 ? (
               filteredDocuments.map((doc) => (
-                <DocumentCard key={doc.id} document={doc} />
+                <DocumentCard key={doc.id} document={doc} onBookmarkChange={handleBookmarkChange}/>
               ))
             ) : (
               <div className="col-span-full text-center py-10">

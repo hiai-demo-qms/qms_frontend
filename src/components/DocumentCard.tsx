@@ -4,18 +4,21 @@ import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { FileText, User, Info, Bookmark } from "lucide-react";
-import { useBookmarks } from "@/hooks/useBookmarks";
+import { useState } from "react";
 import type { Document } from "@/hooks/useDocuments";
 import { Link, useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
+import { useDocuments } from "@/hooks/useDocuments";
 
 interface DocumentCardProps {
   document: Document;
+  onBookmarkChange?: () => void;
 }
 const accessToken = localStorage.getItem("accessToken"); // Lấy access token từ localStorage nếu cần
-const DocumentCard = ({ document }: DocumentCardProps) => {
-  const { isBookmarked, toggleBookmark } = useBookmarks();
+const DocumentCard = ({ document, onBookmarkChange }: DocumentCardProps) => {
+  const { bookmarkedDocuments, setIsBookmarked, getBookmarkedDocuments, setBookmarkedDocument, checkIsBookmarked } = useDocuments();
   const navigate = useNavigate();
+
   const handleViewDocument = async () => {
     try {
       const res = await fetch(`https://localhost:7147/api/document/${document.id}/download`);
@@ -35,7 +38,10 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
 
   const handleBookmarkToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
-    toggleBookmark(document.id);
+    console.log("Bookmark toggle clicked for document ID:", document.id);
+    console.log("Current bookmarked:", checkIsBookmarked(document.id) ? true : false);
+    setBookmarkedDocument(document.id, checkIsBookmarked(document.id) ? true : false);
+    onBookmarkChange?.();
     console.log("Bookmark: ", localStorage.getItem('bookmarkedDocuments'));
   };
 
@@ -61,10 +67,10 @@ const DocumentCard = ({ document }: DocumentCardProps) => {
               variant="ghost"
               size="sm"
               onClick={handleBookmarkToggle}
-              className={`h-8 w-8 p-0 hover:bg-yellow-50 ${isBookmarked(document.id) ? 'text-yellow-600' : 'text-gray-400'}`}
+              className={`h-8 w-8 p-0 hover:bg-yellow-50 ${checkIsBookmarked(document.id) ? 'text-yellow-600' : 'text-gray-400'}`}
             >
-              <Bookmark 
-                className={`h-4 w-4 ${isBookmarked(document.id) ? 'fill-current' : ''}`} 
+              <Bookmark
+                className={`h-4 w-4 ${checkIsBookmarked(document.id) ? 'fill-current' : ''}`}
               />
             </Button>
           </div>

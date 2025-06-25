@@ -17,11 +17,13 @@ import SaveButton from "@/components/SaveButton";
 import { useCategories } from "@/hooks/useCategories";
 import { useDocuments, type Document  } from "@/hooks/useDocuments";
 import  dayjs  from "dayjs";
+import { useNavigate } from "react-router-dom";
 
 const MyDocuments = () => {
   const { user } = useAuth();
   const accessToken = localStorage.getItem("accessToken") || "";
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const navigate = useNavigate();
 
   const { documents, uploadDocument, updateDocument, deleteDocument, getDocumentUrl, fetchDocumentsByUser } = useDocuments();
 
@@ -35,6 +37,7 @@ const MyDocuments = () => {
   const [editingDocument, setEditingDocument] = useState<Document | null>(null);
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [editUploadedFile, setEditUploadedFile] = useState<File | null>(null);
+  const [analyzeResponseId, setAnalyzeResponseId] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [formData, setFormData] = useState({
     code: "",
@@ -98,62 +101,12 @@ const MyDocuments = () => {
     console.log("Analyzing edit document:", editUploadedFile?.name);
   };
 
-  const handleSaveDraft = async () => {
-    if (!formData.title) {
-      toast({
-        title: "Error",
-        description: "Please enter a document title to save as draft",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsSaving(true);
-
-    // Simulate save delay
-    setTimeout(() => {
-
-      setIsSaving(false);
-      
-      toast({
-        title: "Success",
-        description: "Document saved as draft successfully",
-      });
-    }, 1000);
-  };
-
-  const handleSaveEditDraft = async () => {
-    if (!editingDocument || !formData.title) {
-      toast({
-        title: "Error",
-        description: "Please enter a document title to save changes",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsSaving(true);
-
-    setTimeout(() => {
-      let filePath = editingDocument.filePath;
-      if (editUploadedFile) {
-        filePath = `/documents/${editUploadedFile.name}`;
-      }
-
-      setIsSaving(false);
-      
-      toast({
-        title: "Success",
-        description: "Document changes saved as draft",
-      });
-    }, 1000);
-  };
-
   const handleAddDocument = async () => {
     if (!uploadedFile || !formData.title || !formData.category || !formData.description) {
       alert("Vui lòng nhập đầy đủ thông tin bắt buộc.");
       return;
     }
+    
 
     const formDataToSend = new FormData();
     formDataToSend.append("Code", formData.code);
@@ -162,11 +115,18 @@ const MyDocuments = () => {
     formDataToSend.append("Description", formData.description);
     formDataToSend.append("Version", formData.version);
     formDataToSend.append("FileUpload", uploadedFile);
-
+    if (analyzeResponseId !== null) {
+      formDataToSend.append("AnalyzeResponseId", analyzeResponseId.toString());
+    }
+    console.log("Form data to send:");
+    for (const [key, value] of formDataToSend.entries()) {
+      console.log(`${key}:`, value);
+    }
     const res = await uploadDocument(formDataToSend); // Assuming category ID 2 for "All Documents"
     if (res.ok) {
       setIsAddDialogOpen(false);
       fetchDocumentsByUser();
+      setAnalyzeResponseId(null);
       resetForm();
       setUploadedFile(null);
     }
@@ -185,7 +145,9 @@ const MyDocuments = () => {
     formDataToSend.append("Description", formData.description);
     formDataToSend.append("Version", formData.version);
     formDataToSend.append("FileUpload", editUploadedFile);
-
+    if (analyzeResponseId !== null) {
+      formDataToSend.append("AnalyzeResponseId", analyzeResponseId.toString());
+    }
     for (const [key, value] of formDataToSend.entries()) {
       console.log(`${key}:`, value);
     }
@@ -195,6 +157,7 @@ const MyDocuments = () => {
     if (res.ok) {
       fetchDocumentsByUser();
       setIsEditDialogOpen(false);
+      setAnalyzeResponseId(null);
       setEditingDocument(null);
       resetForm();
       toast({
@@ -255,7 +218,15 @@ const MyDocuments = () => {
             <p className="text-gray-600 mt-2">Quản lý tài liệu cá nhân</p>
           </div>
           
-          <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+          <Dialog
+            open={isAddDialogOpen}
+            onOpenChange={(open) => {
+              setIsAddDialogOpen(open);
+              if (!open) {
+                setAnalyzeResponseId(null);
+              }
+            }}
+          >
             <DialogTrigger asChild>
               <Button className="bg-qms-blue hover:bg-qms-lightBlue">
                 <Plus className="mr-2 h-4 w-4" />
@@ -344,17 +315,19 @@ const MyDocuments = () => {
                 <DocumentAnalysis 
                   uploadedFile={uploadedFile}
                   onAnalyze={handleAnalyzeDocument}
+                  onAnalyzeResult={(id) => setAnalyzeResponseId(id)}
                 />
               </div>
               <DialogFooter className="flex gap-2">
-                <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setIsEditDialogOpen(false);
+                    setAnalyzeResponseId(null);
+                  }}
+                >
                   Hủy
                 </Button>
-                <SaveButton 
-                  onSave={handleSaveDraft}
-                  isLoading={isSaving}
-                  disabled={!formData.title}
-                />
                 <Button onClick={handleAddDocument}>Tải lên</Button>
               </DialogFooter>
             </DialogContent>
@@ -405,7 +378,7 @@ const MyDocuments = () => {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => openDocument(document)}
+                          onClick={() => navigate('/document/' + document.id)}
                         >
                           <View className="h-4 w-4" />
                         </Button>
@@ -433,7 +406,15 @@ const MyDocuments = () => {
         </Card>
 
         {/* Edit Dialog */}
-        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+        <Dialog
+          open={isEditDialogOpen}
+          onOpenChange={(open) => {
+            setIsEditDialogOpen(open);
+            if (!open) {
+              setAnalyzeResponseId(null);
+            }
+          }}
+        >
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Chỉnh sửa tài liệu</DialogTitle>
@@ -519,17 +500,19 @@ const MyDocuments = () => {
               <DocumentAnalysis 
                 uploadedFile={editUploadedFile}
                 onAnalyze={handleAnalyzeEditDocument}
+                onAnalyzeResult={(id) => setAnalyzeResponseId(id)}
               />
             </div>
             <DialogFooter className="flex gap-2">
-              <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsEditDialogOpen(false);
+                  setAnalyzeResponseId(null);
+                }}
+              >
                 Hủy
               </Button>
-              <SaveButton 
-                onSave={handleSaveEditDraft}
-                isLoading={isSaving}
-                disabled={!formData.title}
-              />
               <Button onClick={handleEditDocument}>Cập nhật</Button>
             </DialogFooter>
           </DialogContent>

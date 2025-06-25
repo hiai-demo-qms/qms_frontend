@@ -55,26 +55,9 @@ const DocumentView = () => {
       fetchUrl();
     }
     if (containerRef.current) {
-      setPageWidth(containerRef.current.offsetWidth - 32); // trừ padding nếu có
+      setPageWidth(containerRef.current.offsetWidth); // trừ padding nếu có
     }
   }, [document]);
-
-
-
-  // if (loading || !documents.length) {
-  //   console.log(document);
-  //   return (
-  //     <div className="min-h-screen flex flex-col bg-gray-50">
-  //       <Navbar />
-  //       <div className="flex-grow flex items-center justify-center">
-  //         <div className="text-center">
-  //           <Progress className="w-64 h-2 mb-4" value={75} />
-  //           <p className="text-gray-500">Loading document...</p>
-  //         </div>
-  //       </div>
-  //     </div>
-  //   );
-  // }
 
   if (!document) {
     return (

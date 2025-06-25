@@ -18,6 +18,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<void>;
   register: (fullname: string, email: string, password: string) => Promise<void>;
   logout: () => void;
+  changePassword: (currentPassword: string, newPassword: string, confirmPassword: string) => Promise<void>;
   isAuthenticated: boolean;
   isAdmin: boolean;
 }
@@ -244,6 +245,53 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const changePassword = async (currentPassword: string, newPassword: string, confirmPassword: string) => {
+    try {
+      if (!currentPassword || !newPassword || !confirmPassword) {
+        throw new Error("Please fill in all fields");
+      }
+
+      if (newPassword !== confirmPassword) {
+        throw new Error("New passwords do not match");
+      }
+
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[\W_])[A-Za-z\d\W_]{6,20}$/;
+
+      if (!passwordRegex.test(newPassword)) {
+        throw new Error(
+          "Password must be 6–20 characters and include at least one uppercase letter, one lowercase letter, and one special character."
+        );
+      }
+      var oldPassword = currentPassword;
+      var newPassword = newPassword;
+      const response = await fetch(`${API_BASE_URL}change-password`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+        body: JSON.stringify({ oldPassword, newPassword }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Change password failed");
+      }
+
+      toast({
+        title: "Success",
+        description: "Your password has been changed successfully",
+      });
+
+    } catch (error: any) {
+      toast({ 
+        title: "Change Password Failed",
+        description: error.message || "Failed to change password",
+        variant: "destructive",
+      });
+    }
+  };
   const logout = () => {
     
     localStorage.removeItem("isLoggedIn");
@@ -265,6 +313,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         user,
         login,
         register,
+        changePassword,
         logout,
         isAuthenticated: !!user,
         isAdmin: user?.role === 'admin'
